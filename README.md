@@ -1,100 +1,452 @@
 # HR Recruitment System
 
-ASP.NET Core MVC web application for managing job vacancies, applicants, and interviews with three role-based dashboards.
+A full-stack **HR Recruitment Management System** built with **ASP.NET Core MVC and .NET 10** for managing job vacancies, applicants, interviews, recruitment workflows, and role-based operations.
 
-## Features
+🔗 **Live Demo:** https://hr-recruitment.runasp.net/
+💻 **Source Code:** https://github.com/kashmala123/HR-Recruitment
 
-- **Public site** – Home, About, Services, Team, Contact, Newsletter
-- **Applicant panel** – Register, apply to vacancies, track applications, profile picture, notifications
-- **HR panel** – Vacancies, applicants, attach to jobs, schedule/cancel/reschedule interviews, reports
-- **Interviewer panel** – View assigned interviews, submit results & feedback
-- Email notifications (Contact, Newsletter, interview schedule/result) via Gmail SMTP
-- Password hashing, forgot-password flow, profile pictures
+---
 
-## Tech stack
+## 📌 Overview
 
-- ASP.NET Core MVC
-- Entity Framework Core + SQL Server / LocalDB
-- Cookie authentication & role-based authorization
-- Bootstrap 5, Font Awesome
+The **HR Recruitment System** is a role-based web application designed to digitize and simplify the recruitment process.
 
-## Demo logins
+The system provides separate experiences for **HR personnel, interviewers, and applicants**, allowing each role to perform tasks relevant to their responsibilities.
 
-| Role        | Email                         | Password         |
-|-------------|-------------------------------|------------------|
-| HR          | `hr@abccompany.com`           | `Admin@123`      |
-| Interviewer | `interviewer@abccompany.com`  | `Interviewer@123`|
-| Applicant   | `test@example.com`            | `123`            |
+The application includes vacancy management, candidate applications, interview scheduling, interview results, notifications, profile management, and email-based communication.
 
-> Demo accounts only. Change passwords before any real use.
+---
 
-## Prerequisites
+## ✨ Features
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download) (or the version targeted by the project)
-- SQL Server LocalDB or SQL Server Express
-- Visual Studio 2022 / VS Code / Rider (optional)
+### 🌐 Public Website
 
-## Setup
+* Home page
+* About section
+* Services
+* Team section
+* Contact form
+* Newsletter subscription
+* Public job vacancy browsing
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/HR-Recruitment.git
-   cd HR-Recruitment
-   ```
+### 👤 Applicant Panel
 
-2. **Configure email (optional but needed for Contact / Newsletter / interview emails)**  
-   Edit `HRRecruitment/appsettings.json` (or use [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets)):
-   ```json
-   "EmailSettings": {
-     "SmtpUsername": "your-gmail@gmail.com",
-     "SmtpPassword": "your-16-char-app-password",
-     "FromEmail": "your-gmail@gmail.com",
-     "FromName": "HR Recruitment"
-   }
-   ```
-   Create a Gmail [App Password](https://myaccount.google.com/apppasswords) (2-Step Verification required).
+* Applicant registration and authentication
+* Browse available vacancies
+* Apply for jobs
+* Track application status
+* Manage profile
+* Profile picture upload
+* Notifications
+* Change password
+* Forgot-password workflow
 
-3. **Connection string**  
-   Default uses LocalDB:
-   ```
-   Server=(localdb)\MSSQLLocalDB;Database=HRRecruitment;Trusted_Connection=True;TrustServerCertificate=True
-   ```
-   Change in `appsettings.json` if you use another SQL Server instance.
+### 👩‍💼 HR Panel
 
-4. **Run**
-   ```bash
-   cd HRRecruitment
-   dotnet restore
-   dotnet run
-   ```
-   Or open `HRRecruitment.slnx` / the `.csproj` in Visual Studio and press **F5**.
+* HR dashboard
+* Create and manage job vacancies
+* View applicants
+* Attach applicants to vacancies
+* Manage recruitment applications
+* Schedule interviews
+* Reschedule interviews
+* Cancel interviews
+* Track recruitment activity
+* View recruitment reports
 
-   On first run, EF migrations run automatically and seed HR, Interviewer, and a test Applicant.
+### 🎤 Interviewer Panel
 
-## Project structure
+* View assigned interviews
+* Review interview information
+* Submit interview results
+* Provide candidate feedback
+* Track completed interviews
 
-```
+### 📧 Email & Notifications
+
+* Contact form email notifications
+* Newsletter functionality
+* Interview scheduling notifications
+* Interview result notifications
+* Password recovery emails
+* Application-related notifications
+
+---
+
+## 🔐 Authentication & Security
+
+The application implements role-based access control using ASP.NET Core authentication and authorization.
+
+Key security-related features include:
+
+* Cookie-based authentication
+* Role-based authorization
+* Password hashing
+* Protected role-specific dashboards
+* Forgot-password workflow
+* Change-password functionality
+* User-specific access control
+* Secure production configuration
+
+> Production credentials, database passwords, SMTP credentials, and other sensitive configuration values are intentionally excluded from this repository.
+
+---
+
+## 👥 Roles & Permissions
+
+| Action                     |  HR | Interviewer | Applicant |
+| -------------------------- | :-: | :---------: | :-------: |
+| Manage vacancies           |  ✓  |             |           |
+| Manage applicants          |  ✓  |             |           |
+| Attach applicants to jobs  |  ✓  |             |           |
+| Schedule interviews        |  ✓  |             |           |
+| Reschedule interviews      |  ✓  |             |           |
+| Cancel interviews          |  ✓  |             |           |
+| Submit interview results   |     |      ✓      |           |
+| Provide interview feedback |     |      ✓      |           |
+| View vacancies             |     |             |     ✓     |
+| Apply for jobs             |     |             |     ✓     |
+| Track applications         |     |             |     ✓     |
+| Manage profile             |  ✓  |      ✓      |     ✓     |
+| Change password            |  ✓  |      ✓      |     ✓     |
+
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+
+* **C#**
+* **ASP.NET Core MVC**
+* **.NET 10**
+* **Entity Framework Core**
+* **SQL Server**
+* **ASP.NET Core Authentication & Authorization**
+
+### Frontend
+
+* **HTML5**
+* **CSS3**
+* **JavaScript**
+* **Bootstrap 5**
+* **Font Awesome**
+* **Razor Views**
+
+### Development & Deployment
+
+* **Git**
+* **GitHub**
+* **Visual Studio / VS Code**
+* **MonsterASP**
+* **Let's Encrypt HTTPS**
+
+---
+
+## 🏗️ Application Architecture
+
+The project follows the **ASP.NET Core MVC architecture**, separating application responsibilities into controllers, models, views, view models, and supporting services.
+
+```text
 HRRecruitment/
-├── Controllers/     # Account, Home, HR, Interviewer, UserPanel, Newsletter
-├── Models/          # Entities, services (email, password, activity log)
-├── Views/           # Razor views + shared layouts
+│
+├── Controllers/
+│   ├── Account
+│   ├── Home
+│   ├── HR
+│   ├── Interviewer
+│   ├── UserPanel
+│   └── Newsletter
+│
+├── Models/
+│   ├── Entities
+│   ├── Email Services
+│   ├── Password Services
+│   └── Activity Logging
+│
 ├── ViewModels/
+│
+├── Views/
+│   ├── Shared
+│   ├── Account
+│   ├── HR
+│   ├── Interviewer
+│   └── UserPanel
+│
 ├── Migrations/
-└── wwwroot/         # CSS, JS, images, uploads
+│
+├── wwwroot/
+│   ├── CSS
+│   ├── JavaScript
+│   ├── Images
+│   └── Uploads
+│
+├── appsettings.json
+├── Program.cs
+└── HRRecruitment.csproj
 ```
 
-## Roles overview
+---
 
-| Action                         | HR | Interviewer | Applicant |
-|--------------------------------|:--:|:-----------:|:---------:|
-| Manage vacancies               | ✓  |             |           |
-| Manage applicants / attach     | ✓  |             |           |
-| Schedule interviews            | ✓  |             |           |
-| Submit interview result        |    | ✓           |           |
-| View vacancies & apply         |    |             | ✓         |
-| Profile / change password      | ✓  | ✓           | ✓         |
+## 🔄 Recruitment Workflow
 
-## License
+```text
+HR Creates Vacancy
+        ↓
+Applicant Browses Vacancies
+        ↓
+Applicant Submits Application
+        ↓
+HR Reviews Application
+        ↓
+Applicant Attached to Vacancy
+        ↓
+Interview Scheduled
+        ↓
+Interviewer Conducts Interview
+        ↓
+Interview Result & Feedback Submitted
+        ↓
+HR Tracks Recruitment Outcome
+```
 
-This project is provided for educational / portfolio use.  
-Add a license file (e.g. MIT) if you want others to reuse the code formally.
+---
+
+## 🗄️ Database
+
+The application uses **Microsoft SQL Server** with **Entity Framework Core**.
+
+The database manages information related to:
+
+* Users and roles
+* Job vacancies
+* Applicants
+* Applications
+* Interviews
+* Interview results
+* Notifications
+* Newsletter subscriptions
+* Activity records
+
+Entity Framework Core migrations are included in the project for database schema management.
+
+---
+
+## 📸 Screenshots
+
+Screenshots of the deployed application will be added here.
+
+### 🏠 Public Website
+
+*Add screenshot here*
+
+### 🔐 Authentication
+
+*Add screenshot here*
+
+### 📊 HR Dashboard
+
+*Add screenshot here*
+
+### 👤 Applicant Dashboard
+
+*Add screenshot here*
+
+### 🎤 Interviewer Dashboard
+
+*Add screenshot here*
+
+### 💼 Job Vacancy / Application
+
+*Add screenshot here*
+
+---
+
+## 🚀 Run the Project Locally
+
+### Prerequisites
+
+Make sure you have:
+
+* **.NET 10 SDK**
+* **SQL Server LocalDB, SQL Server Express, or SQL Server**
+* Visual Studio 2022, VS Code, or JetBrains Rider
+
+Check your .NET version:
+
+```bash
+dotnet --version
+```
+
+---
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/kashmala123/HR-Recruitment.git
+cd HR-Recruitment
+```
+
+---
+
+### 2. Restore dependencies
+
+```bash
+dotnet restore
+```
+
+---
+
+### 3. Configure the database
+
+The development configuration uses SQL Server LocalDB.
+
+Example:
+
+```text
+Server=(localdb)\MSSQLLocalDB;
+Database=HRRecruitment;
+Trusted_Connection=True;
+TrustServerCertificate=True;
+```
+
+Update the connection string in `appsettings.json` if you are using a different SQL Server instance.
+
+---
+
+### 4. Configure email
+
+Email functionality uses Gmail SMTP.
+
+For local development, configure your own SMTP credentials using **User Secrets or another secure configuration method**.
+
+Example structure:
+
+```json
+{
+  "EmailSettings": {
+    "SmtpServer": "smtp.gmail.com",
+    "SmtpPort": 587,
+    "SmtpUsername": "your-email@gmail.com",
+    "SmtpPassword": "your-app-password",
+    "FromEmail": "your-email@gmail.com",
+    "FromName": "HR Recruitment"
+  }
+}
+```
+
+**Never commit real email passwords, app passwords, API keys, or other secrets to GitHub.**
+
+---
+
+### 5. Apply database migrations
+
+```bash
+dotnet ef database update
+```
+
+---
+
+### 6. Run the application
+
+```bash
+dotnet run
+```
+
+Or open the project in Visual Studio and run it using the development profile.
+
+---
+
+## ☁️ Deployment
+
+The application is deployed on **MonsterASP** using:
+
+* ASP.NET Core / .NET 10
+* Microsoft SQL Server
+* Production configuration
+* Let's Encrypt SSL certificate
+* HTTPS
+* Automatic HTTPS certificate renewal
+* HTTP → HTTPS redirection
+
+### Live Application
+
+🌐 **https://hr-recruitment.runasp.net/**
+
+---
+
+## 🎯 What I Practiced & Demonstrated
+
+This project provided hands-on experience with:
+
+* ASP.NET Core MVC
+* C# backend development
+* Entity Framework Core
+* SQL Server
+* Authentication and authorization
+* Role-based application design
+* CRUD operations
+* Form handling and validation
+* File uploads
+* Email integration
+* Password recovery
+* Database migrations
+* MVC architecture
+* Git and GitHub
+* Production deployment
+* HTTPS configuration
+* Responsive web development
+
+---
+
+## 📂 Repository Structure
+
+The main application is located inside:
+
+```text
+HR-Recruitment/
+└── HRRecruitment/
+```
+
+The `HRRecruitment` project contains the ASP.NET Core MVC application, views, controllers, models, migrations, static assets, and configuration.
+
+---
+
+## 🔒 Security Notes
+
+This repository does **not** contain production credentials.
+
+Sensitive configuration such as:
+
+* Database passwords
+* SMTP passwords
+* Gmail App Passwords
+* API keys
+* Production secrets
+
+should be supplied through secure configuration or environment-specific settings.
+
+For production deployment, sensitive files should also be protected from being overwritten by automated deployments.
+
+---
+
+## 📜 License
+
+This project was developed as a **portfolio and educational project**.
+
+If you plan to reuse or distribute the source code, consider adding an appropriate open-source license such as MIT.
+
+---
+
+## 👩‍💻 Developer
+
+**Kashmala Khan**
+
+Full-Stack Developer focused on **C#, ASP.NET Core, SQL Server, and modern web application development**.
+
+---
+
+⭐ **Explore the source code:**
+https://github.com/kashmala123/HR-Recruitment
+
+🌐 **Try the live application:**
+https://hr-recruitment.runasp.net/
