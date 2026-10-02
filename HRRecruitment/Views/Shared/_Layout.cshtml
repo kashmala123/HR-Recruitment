@@ -69,28 +69,51 @@
             </div>
             <a asp-controller="Home" asp-action="Contact" class="nav-item nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Contact" ? "active" : "")">Contact</a>
         </div>
-        <!-- Buttons Section -->
-     <div class="d-none d-lg-flex align-items-center gap-2">
-    @if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "UserType" && c.Value == "Applicant"))
-    {
-        <a asp-controller="UserPanel" asp-action="Index" class="btn btn-outline-primary border-2 rounded-pill px-3 py-2">
-            <i class="fa fa-user me-1"></i> My Account
-        </a>
-        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-primary border-2 rounded-pill px-3 py-2">
-            <i class="fa fa-sign-out-alt me-1"></i> Logout
-        </a>
-    }
-    else
-    {
-        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary border-2 rounded-pill px-3 py-2">
-            <i class="fa fa-user me-1"></i> Applicant Login
-        </a>
-        <a asp-controller="Account" asp-action="Register" class="btn btn-primary rounded-pill px-3 py-2">
-            <i class="fa fa-user-plus me-1"></i> Register
-        </a>
-    }
-</div>
-    </div> <!-- close collapse navbar-collapse -->
+                <!-- Buttons Section -->
+                <div class="d-none d-lg-flex align-items-center gap-2">
+                    @if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "UserType" && c.Value == "Applicant"))
+                    {
+                        <a asp-controller="UserPanel" asp-action="Index" class="btn btn-outline-primary border-2 rounded-pill px-3 py-2">
+                            <i class="fa fa-user me-1"></i> My Account
+                        </a>
+                        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-primary border-2 rounded-pill px-3 py-2">
+                            <i class="fa fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary border-2 rounded-pill px-3 py-2">
+                            <i class="fa fa-user me-1"></i> Applicant Login
+                        </a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary rounded-pill px-3 py-2">
+                            <i class="fa fa-user-plus me-1"></i> Register
+                        </a>
+                    }
+                </div>
+
+                <!-- Mobile-only Login/Register -->
+                <div class="d-lg-none px-4 pb-4 d-flex flex-column gap-2">
+                    @if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "UserType" && c.Value == "Applicant"))
+                    {
+                        <a asp-controller="UserPanel" asp-action="Index" class="btn btn-outline-primary border-2 rounded-pill w-100">
+                            <i class="fa fa-user me-1"></i> My Account
+                        </a>
+                        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-primary border-2 rounded-pill w-100">
+                            <i class="fa fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary border-2 rounded-pill w-100">
+                            <i class="fa fa-user me-1"></i> Applicant Login
+                        </a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary rounded-pill w-100">
+                            <i class="fa fa-user-plus me-1"></i> Register
+                        </a>
+                    }
+                </div>
+
+            </div> <!-- close collapse navbar-collapse -->
 </nav>
 </div> <!-- close container-fluid -->
 
