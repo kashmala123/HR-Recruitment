@@ -1,0 +1,244 @@
+﻿@model HRRecruitment.Models.Vacancy
+@{
+    ViewData["Title"] = "Vacancy Details";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1"><i class="fas fa-briefcase me-2 text-primary"></i>Vacancy Details</h4>
+                        <p class="text-muted mb-0">@Model.VacancyNumber - @Model.JobTitle</p>
+                    </div>
+                    <div>
+                        <a href="@Url.Action("EditVacancy", "HR", new { id = Model.VacancyId })" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Edit
+                        </a>
+                        <a href="@Url.Action("Vacancies", "HR")" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vacancy Info -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Vacancy Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th style="width: 200px;">Vacancy Number</th>
+                            <td>@Model.VacancyNumber</td>
+                        </tr>
+                        <tr>
+                            <th>Job Title</th>
+                            <td>@Model.JobTitle</td>
+                        </tr>
+                        <tr>
+                            <th>Department</th>
+                            <td>@(Model.Department?.DepartmentName ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th>Total Openings</th>
+                            <td>@Model.TotalOpenings</td>
+                        </tr>
+                        <tr>
+                            <th>Remaining Openings</th>
+                            <td>@Model.RemainingOpenings</td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                @if (Model.Status == "Open")
+                                {
+                                    <span class="badge bg-success p-2">Open</span>
+                                }
+                                else if (Model.Status == "Closed")
+                                {
+                                    <span class="badge bg-secondary p-2">Closed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning p-2">@Model.Status</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Created By</th>
+                            <td>@(Model.CreatedByEmployee?.EmployeeName ?? "N/A")</td>
+                        </tr>
+                        <tr>
+                            <th>Created Date</th>
+                            <td>@Model.CreatedDate.ToString("dd MMM yyyy")</td>
+                        </tr>
+                        @if (Model.ClosingDate.HasValue)
+                        {
+                            <tr>
+                                <th>Closing Date</th>
+                                <td>@Model.ClosingDate.Value.ToString("dd MMM yyyy")</td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.ClosingReason))
+                        {
+                            <tr>
+                                <th>Closing Reason</th>
+                                <td>@Model.ClosingReason</td>
+                            </tr>
+                        }
+                    </table>
+
+                    <h6 class="mt-4">Job Description</h6>
+                    <p>@Model.JobDescription</p>
+
+                    <h6 class="mt-4">Required Qualifications</h6>
+                    <p>@(Model.RequiredQualifications ?? "Not specified")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Quick Stats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <h3>@(Model.ApplicantVacancies?.Count ?? 0)</h3>
+                        <p class="text-muted">Total Applicants</p>
+                    </div>
+                    <div class="text-center mb-3">
+                        <h3>@Model.RemainingOpenings</h3>
+                        <p class="text-muted">Remaining Openings</p>
+                    </div>
+                    <div class="progress mb-3" style="height: 20px;">
+                        @{
+                            var filledPercent = Model.TotalOpenings > 0 ?
+                            ((Model.TotalOpenings - Model.RemainingOpenings) * 100 / Model.TotalOpenings) : 0;
+                        }
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: @filledPercent%;"
+                             aria-valuenow="@filledPercent" aria-valuemin="0" aria-valuemax="100">
+                            @filledPercent% Filled
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.Status == "Open" && Model.RemainingOpenings > 0)
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <a href="@Url.Action("Applicants", "HR")" class="btn btn-success w-100 mb-2">
+                            <i class="fas fa-user-plus me-2"></i>Attach Applicant
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Attached Applicants -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Attached Applicants</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.ApplicantVacancies != null && Model.ApplicantVacancies.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Applicant #</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Qualification</th>
+                                        <th>Attached Date</th>
+                                        <th>Status</th>
+                                        <th>Interviews</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var av in Model.ApplicantVacancies)
+                                    {
+                                        <tr>
+                                            <td>@av.Applicant?.ApplicantNumber</td>
+                                            <td>@av.Applicant?.FirstName @av.Applicant?.LastName</td>
+                                            <td>@av.Applicant?.Email</td>
+                                            <td>@(av.Applicant?.HighestQualification ?? "-")</td>
+                                            <td>@av.AttachedDate.ToString("dd MMM yyyy")</td>
+                                            <td>
+                                                @if (av.CurrentStatus == "Selected")
+                                                {
+                                                    <span class="badge bg-success">Selected</span>
+                                                }
+                                                else if (av.CurrentStatus == "Rejected")
+                                                {
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                }
+                                                else if (av.CurrentStatus == "Interview Scheduled")
+                                                {
+                                                    <span class="badge bg-info">Interview Scheduled</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@av.CurrentStatus</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (av.Interviews != null && av.Interviews.Any())
+                                                {
+                                                    <span class="badge bg-primary">@av.Interviews.Count</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">None</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (av.CurrentStatus != "Selected" && av.CurrentStatus != "Rejected")
+                                                {
+                                                    <a href="@Url.Action("ScheduleInterview", "HR", new { applicantVacancyId = av.ApplicantVacancyId })"
+                                                           class="btn btn-sm btn-outline-success">
+                                                        Schedule Interview
+                                                    </a>
+                                                }
+                                                <a href="@Url.Action("EditApplicant", "HR", new { id = av.ApplicantId })"
+                                                   class="btn btn-sm btn-outline-primary" title="View Applicant">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No applicants attached to this vacancy yet</p>
+                            <a href="@Url.Action("Applicants", "HR")" class="btn btn-success">
+                                <i class="fas fa-link me-2"></i>Attach Applicants
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

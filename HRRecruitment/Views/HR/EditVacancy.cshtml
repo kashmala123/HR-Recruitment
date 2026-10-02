@@ -1,0 +1,143 @@
+﻿@model HRRecruitment.Models.Vacancy
+@{
+    ViewData["Title"] = "Edit Vacancy";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1"><i class="fas fa-edit me-2 text-primary"></i>Edit Vacancy</h4>
+                        <p class="text-muted mb-0">Vacancy Number: <strong>@Model.VacancyNumber</strong></p>
+                    </div>
+                    <a href="@Url.Action("Vacancies", "HR")" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Vacancies
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form asp-action="EditVacancy" asp-route-id="@Model.VacancyId" method="post">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="VacancyId" />
+                        <input type="hidden" asp-for="VacancyNumber" />
+                        <input type="hidden" asp-for="CreatedBy" />
+                        <input type="hidden" asp-for="CreatedDate" />
+                        <input type="hidden" asp-for="RemainingOpenings" />
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label asp-for="JobTitle" class="form-label">Job Title <span class="text-danger">*</span></label>
+                                <input asp-for="JobTitle" class="form-control" />
+                                <span asp-validation-for="JobTitle" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="TotalOpenings" class="form-label">Total Openings <span class="text-danger">*</span></label>
+                                <input asp-for="TotalOpenings" class="form-control" type="number" min="1" />
+                                <small class="text-muted">Note: Openings can only be increased</small>
+                                <span asp-validation-for="TotalOpenings" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DepartmentId" class="form-label">Department <span class="text-danger">*</span></label>
+                                <select asp-for="DepartmentId" asp-items="ViewBag.Departments" class="form-select">
+                                    <option value="">Select Department</option>
+                                </select>
+                                <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ClosingDate" class="form-label">Closing Date</label>
+                                <input asp-for="ClosingDate" class="form-control" type="date"
+                                       min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="ClosingDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label asp-for="JobDescription" class="form-label">Job Description <span class="text-danger">*</span></label>
+                                <textarea asp-for="JobDescription" class="form-control" rows="6"></textarea>
+                                <span asp-validation-for="JobDescription" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label asp-for="RequiredQualifications" class="form-label">Required Qualifications</label>
+                                <textarea asp-for="RequiredQualifications" class="form-control" rows="4"></textarea>
+                                <span asp-validation-for="RequiredQualifications" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Current Status</label>
+                                <div>
+                                    @if (Model.Status == "Open")
+                                    {
+                                        <span class="badge bg-success p-2">Open</span>
+                                    }
+                                    else if (Model.Status == "Closed")
+                                    {
+                                        <span class="badge bg-secondary p-2">Closed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning p-2">@Model.Status</span>
+                                    }
+                                </div>
+                                <small class="text-muted">Status can be changed from Vacancies list</small>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Statistics</label>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="border p-3 rounded text-center">
+                                            <strong>@Model.TotalOpenings</strong>
+                                            <p class="mb-0 text-muted">Total Openings</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="border p-3 rounded text-center">
+                                            <strong>@Model.RemainingOpenings</strong>
+                                            <p class="mb-0 text-muted">Remaining Openings</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="border p-3 rounded text-center">
+                                            <strong>@(Model.ApplicantVacancies?.Count ?? 0)</strong>
+                                            <p class="mb-0 text-muted">Total Applicants</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update Vacancy
+                            </button>
+                            <a href="@Url.Action("Vacancies", "HR")" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

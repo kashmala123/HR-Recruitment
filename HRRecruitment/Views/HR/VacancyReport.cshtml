@@ -1,0 +1,159 @@
+﻿@model HRRecruitment.ViewModels.VacancyReportViewModel
+@{
+    ViewData["Title"] = "Vacancy Report";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="mb-1"><i class="fas fa-chart-bar me-2 text-primary"></i>Vacancy Report</h4>
+                    <p class="text-muted mb-0">Summary of all vacancies</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3>@Model.TotalVacancies</h3>
+                    <p class="text-muted">Total Vacancies</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3>@Model.OpenVacancies</h3>
+                    <p class="text-muted">Open</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3>@Model.ClosedVacancies</h3>
+                    <p class="text-muted">Closed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3>@Model.SuspendedVacancies</h3>
+                    <p class="text-muted">Suspended</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Openings vs Filled</h5>
+                </div>
+                <div class="card-body text-center">
+                    <h2>@Model.TotalOpenings</h2>
+                    <p>Total Openings</p>
+                    <h2 class="text-success">@Model.FilledOpenings</h2>
+                    <p>Filled Openings</p>
+                    <div class="progress" style="height: 30px;">
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: @(Model.TotalOpenings == 0 ? 0 : (Model.FilledOpenings * 100 / Model.TotalOpenings))%">
+                            @(Model.TotalOpenings == 0 ? 0 : (Model.FilledOpenings * 100 / Model.TotalOpenings))%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Applicants per Vacancy</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="applicantsChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Table -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Vacancy Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+<th>Vacancy #</th>
+                        <th>Job Title</th>
+                        <th>Department</th>
+                        <th>Total Openings</th>
+                        <th>Remaining</th>
+                        <th>Applicants</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var vacancy in Model.Vacancies)
+                        {
+                            <tr>
+                                <td>@vacancy.VacancyNumber</td>
+                                <td>@vacancy.JobTitle</td>
+                                <td>@(vacancy.Department?.DepartmentName ?? "N/A")</td>
+                                <td>@vacancy.TotalOpenings</td>
+                                <td>@vacancy.RemainingOpenings</td>
+                                <td>@(vacancy.ApplicantVacancies?.Count ?? 0)</td>
+                                <td>
+                                    <span class="badge @(vacancy.Status == "Open" ? "bg-success" : (vacancy.Status == "Closed" ? "bg-secondary" : "bg-warning"))">
+                                        @vacancy.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('applicantsChart').getContext('2d');
+        new Chart(ctx, {
+        type: 'bar',
+        data: {
+        labels: @Html.Raw(Json.Serialize(Model.Vacancies.Select(v => v.JobTitle).ToList())),
+        datasets: [{
+        label: 'Applicants',
+        data: @Html.Raw(Json.Serialize(Model.Vacancies.Select(v => v.ApplicantVacancies?.Count ?? 0).ToList())),
+        backgroundColor: '#ff2b6e',
+        borderRadius: 5
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+        y: {
+        beginAtZero: true,
+        title: { display: true, text: 'Number of Applicants' }
+        }
+        }
+        }
+        });
+    </script>
+}

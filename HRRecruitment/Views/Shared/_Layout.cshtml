@@ -1,0 +1,194 @@
+﻿@using Microsoft.AspNetCore.Authentication
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>@ViewData["Title"] - HR Recruitment</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="~/lib/animate/animate.min.css" rel="stylesheet">
+    <link href="~/lib/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <link href="~/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="~/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Template Stylesheet -->
+    <link href="~/css/style.css" rel="stylesheet">
+
+    <style>
+        /* Your Custom Logo CSS */
+        .logo-wrapper { display: flex; flex-direction: column; line-height: 1.2; background: linear-gradient(135deg, #1a2b4c 0%, #2b4b8f 100%); padding: 8px 15px; border-radius: 10px; border-left: 4px solid #ff6b6b; transition: all 0.3s ease; }
+        .logo-wrapper:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(0,123,255,0.3); }
+        .logo-line1 { font-size: 1.1rem; font-weight: 300; color: #ccc; letter-spacing: 1px; }
+        .logo-line2 { font-size: 1.4rem; font-weight: 700; color: white; text-transform: uppercase; }
+        .logo-line3 { font-size: 1rem; font-weight: 400; color: #4a90e2; }
+        .logo-badge { position: absolute; top: -5px; right: -5px; background: #ff6b6b; color: white; font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 20px; text-transform: uppercase; }
+        .navbar-brand { position: relative; display: inline-block; }
+    </style>
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Navbar Start -->
+    <div class="container-fluid p-0">
+     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top px-lg-5 py-3">
+    <a asp-controller="Home" asp-action="Index" class="navbar-brand ms-4 ms-lg-0">
+        <img src="~/img/download.png" alt="HR Recruitment System" style="height: 70px; width: auto;">
+    </a>
+    <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav mx-auto p-4 p-lg-0">
+            <a asp-controller="Home" asp-action="Index" class="nav-item nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")">Home</a>
+            <a asp-controller="Home" asp-action="About" class="nav-item nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "About" ? "active" : "")">About</a>
+            <a asp-controller="Home" asp-action="Services" class="nav-item nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Services" ? "active" : "")">Services</a>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                <div class="dropdown-menu m-0">
+                    <a asp-controller="Home" asp-action="Team" class="dropdown-item">Our Employees</a>
+                    <a asp-controller="Home" asp-action="Testimonial" class="dropdown-item">Testimonial</a>
+                </div>
+            </div>
+            <a asp-controller="Home" asp-action="Contact" class="nav-item nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Contact" ? "active" : "")">Contact</a>
+        </div>
+        <!-- Buttons Section -->
+     <div class="d-none d-lg-flex align-items-center gap-2">
+    @if (User.Identity.IsAuthenticated && User.HasClaim(c => c.Type == "UserType" && c.Value == "Applicant"))
+    {
+        <a asp-controller="UserPanel" asp-action="Index" class="btn btn-outline-primary border-2 rounded-pill px-3 py-2">
+            <i class="fa fa-user me-1"></i> My Account
+        </a>
+        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-primary border-2 rounded-pill px-3 py-2">
+            <i class="fa fa-sign-out-alt me-1"></i> Logout
+        </a>
+    }
+    else
+    {
+        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary border-2 rounded-pill px-3 py-2">
+            <i class="fa fa-user me-1"></i> Applicant Login
+        </a>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-primary rounded-pill px-3 py-2">
+            <i class="fa fa-user-plus me-1"></i> Register
+        </a>
+    }
+</div>
+    </div> <!-- close collapse navbar-collapse -->
+</nav>
+</div> <!-- close container-fluid -->
+
+    <main role="main">
+    @if (TempData["NewsletterSuccess"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["NewsletterSuccess"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["NewsletterError"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["NewsletterError"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["NewsletterInfo"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            @TempData["NewsletterInfo"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @RenderBody()
+</main>
+    <!-- Footer Start -->
+    <div class="container-fluid footer pt-5 pb-4 wow fadeIn" data-wow-delay="0.1s" style="background:#0a0a0f;">
+        <div class="container py-4">
+            <div class="row g-4 align-items-start">
+                <!-- Brand -->
+                <div class="col-lg-4 col-md-6">
+                    <h3 class="text-white mb-2">HR Recruitment</h3>
+                    <p class="text-primary small mb-3">Your Trusted Partner</p>
+                    <p class="mb-3" style="max-width: 280px; color:#d0d0d8;">Streamlining the hiring process with innovative solutions for modern HR needs.</p>
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-sm-square btn-outline-primary rounded-circle" href="https://twitter.com" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>
+                        <a class="btn btn-sm-square btn-outline-primary rounded-circle" href="https://facebook.com" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-sm-square btn-outline-primary rounded-circle" href="https://youtube.com" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-sm-square btn-outline-primary rounded-circle" href="https://linkedin.com" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="text-white mb-3">Quick Links</h5>
+                    <div class="d-flex flex-column gap-2">
+                        <a class="text-decoration-none footer-link" asp-controller="Home" asp-action="Index" style="color:#d0d0d8;">Home</a>
+                        <a class="text-decoration-none footer-link" asp-controller="Home" asp-action="About" style="color:#d0d0d8;">About Us</a>
+                        <a class="text-decoration-none footer-link" asp-controller="Home" asp-action="Services" style="color:#d0d0d8;">Services</a>
+                        <a class="text-decoration-none footer-link" asp-controller="Home" asp-action="Team" style="color:#d0d0d8;">Our Employees</a>
+                        <a class="text-decoration-none footer-link" asp-controller="Home" asp-action="Contact" style="color:#d0d0d8;">Contact</a>
+                    </div>
+                </div>
+                <!-- Contact -->
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-white mb-3">Contact Us</h5>
+                    <p class="mb-2" style="color:#d0d0d8;"><i class="fa fa-map-marker-alt me-2 text-primary"></i>123 Street, City</p>
+                    <p class="mb-2" style="color:#d0d0d8;"><i class="fa fa-phone-alt me-2 text-primary"></i>+012 345 6789</p>
+                    <p class="mb-0" style="color:#d0d0d8;"><i class="fa fa-envelope me-2 text-primary"></i>info@hrrecruitment.com</p>
+                </div>
+                <!-- Newsletter -->
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-white mb-3">Stay Updated</h5>
+                    <p class="mb-3" style="color:#d0d0d8;">Subscribe to our newsletter for job updates.</p>
+                    <form asp-controller="Newsletter" asp-action="Subscribe" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="input-group">
+                            <input type="email" name="email" class="form-control bg-transparent border-primary text-light" placeholder="Your email" required style="border-radius: 50px 0 0 50px; color:#fff;">
+                            <button type="submit" class="btn btn-primary px-3" style="border-radius: 0 50px 50px 0;">Go</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <hr class="my-4" style="border-color:rgba(255,255,255,0.15);">
+            <div class="text-center">
+                <p class="mb-0" style="color:#c8c8d0;">&copy; @DateTime.Now.Year <a class="text-primary text-decoration-none" asp-controller="Home" asp-action="Index">HR Recruitment</a>. All Rights Reserved.</p>
+            </div>
+        </div>
+    </div>
+    <style>
+        .footer-link:hover { color: #ff2b6e !important; }
+    </style>
+    <!-- Footer End -->
+
+    <a href="#" class="btn btn-outline-primary border-2 btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/wow/wow.min.js"></script>
+    <script src="~/lib/easing/easing.min.js"></script>
+    <script src="~/lib/waypoints/waypoints.min.js"></script>
+    <script src="~/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="~/lib/lightbox/js/lightbox.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="~/js/main.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

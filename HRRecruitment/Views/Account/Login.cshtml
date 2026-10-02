@@ -1,0 +1,208 @@
+﻿@model HRRecruitment.Models.LoginViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - HR Recruitment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #050508;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Pink glitter effect – static radial gradients */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 43, 110, 0.15) 1px, transparent 1px),
+                radial-gradient(circle at 80% 40%, rgba(255, 43, 110, 0.12) 1px, transparent 1px),
+                radial-gradient(circle at 30% 70%, rgba(255, 43, 110, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 70% 85%, rgba(255, 43, 110, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px, 60px 60px, 80px 80px, 100px 100px;
+            background-repeat: repeat;
+            pointer-events: none;
+        }
+        .login-card {
+            background: #111117;
+            border-radius: 24px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid rgba(255, 43, 110, 0.2);
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+        }
+        .logo-area {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .logo-area img {
+            height: 50px;
+            width: auto;
+        }
+        .logo-area h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            background: linear-gradient(135deg, #fff, #ffb0c3);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .form-control {
+            background-color: #0e0e16;
+            border: 1px solid #2a2a35;
+            color: #e4e4e7;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+        }
+        .form-control:focus {
+            background-color: #0e0e16;
+            border-color: #ff2b6e;
+            box-shadow: 0 0 0 2px rgba(255,43,110,0.3);
+            color: #fff;
+        }
+        .input-group {
+            position: relative;
+        }
+        .input-group .form-control {
+            border-radius: 12px;
+            padding-right: 3rem;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            z-index: 10;
+            padding: 0;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        .password-toggle:hover {
+            color: #ff2b6e;
+        }
+        .btn-pink {
+            background: linear-gradient(95deg, #ff2b6e, #ff4d7a);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 40px;
+            padding: 0.75rem;
+            transition: all 0.2s;
+        }
+        .btn-pink:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(255,43,110,0.3);
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #b0b0c0;
+        }
+        .text-muted {
+            color: #9ca3af !important;
+        }
+        a {
+            color: #ff2b6e;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .form-check-input:checked {
+            background-color: #ff2b6e;
+            border-color: #ff2b6e;
+        }
+        .text-danger {
+            color: #ff7b9c !important;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo-area">
+            <img src="~/img/download.png" alt="HR Recruitment" style="height: 60px;">
+            <h3>Applicant Portal</h3>
+            <p class="text-muted">Sign in to your account</p>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success text-center mb-3">@TempData["SuccessMessage"]</div>
+        }
+
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+        {
+            @Html.ValidationSummary(true, "", new { @class = "text-danger text-center mb-3" })
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "you@example.com" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                <div class="input-group">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "••••••••", id = "password" })
+                    <button type="button" class="password-toggle" id="togglePassword">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-4 form-check">
+                @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                @Html.LabelFor(m => m.RememberMe, new { @class = "form-check-label text-muted" })
+            </div>
+
+            <button type="submit" class="btn btn-pink w-100">Sign In</button>
+
+            <div class="text-center mt-3">
+                <small><a asp-action="ForgotPassword">Forgot password?</a></small>
+            </div>
+            <div class="text-center mt-2">
+                <small>Don't have an account? <a asp-action="Register">Register here</a></small>
+            </div>
+        }
+    </div>
+
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+    </script>
+</body>
+</html>

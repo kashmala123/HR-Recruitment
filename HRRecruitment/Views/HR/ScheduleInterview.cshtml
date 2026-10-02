@@ -1,0 +1,157 @@
+﻿@model HRRecruitment.ViewModels.ScheduleInterviewViewModel
+@{
+    ViewData["Title"] = "Schedule Interview";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1"><i class="fas fa-calendar-plus me-2 text-primary"></i>Schedule Interview</h4>
+                        <p class="text-muted mb-0">Applicant: <strong>@Model.ApplicantName</strong> | Position: <strong>@Model.JobTitle</strong></p>
+                    </div>
+                    <a href="@Url.Action("Vacancies", "HR")" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form asp-action="ScheduleInterview" method="post" id="scheduleForm">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="ApplicantVacancyId" />
+                        <input type="hidden" asp-for="ApplicantName" />
+                        <input type="hidden" asp-for="JobTitle" />
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label asp-for="InterviewerId" class="form-label">Interviewer <span class="text-danger">*</span></label>
+                                <select asp-for="InterviewerId" class="form-select" asp-items="Model.InterviewersList">
+                                    <option value="">-- Select Interviewer --</option>
+                                </select>
+                                <span asp-validation-for="InterviewerId" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="InterviewDate" class="form-label">Interview Date <span class="text-danger">*</span></label>
+                                <input asp-for="InterviewDate" class="form-control" type="date"
+                                       min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" />
+                                <span asp-validation-for="InterviewDate" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="StartTime" class="form-label">Start Time <span class="text-danger">*</span></label>
+                                <input asp-for="StartTime" class="form-control" type="time" />
+                                <span asp-validation-for="StartTime" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label asp-for="EndTime" class="form-label">End Time <span class="text-danger">*</span></label>
+                                <input asp-for="EndTime" class="form-control" type="time" />
+                                <span asp-validation-for="EndTime" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="InterviewMode" class="form-label">Interview Mode <span class="text-danger">*</span></label>
+                                <select asp-for="InterviewMode" class="form-select" asp-items="Model.InterviewModes">
+                                    <option value="">-- Select Mode --</option>
+                                </select>
+                                <span asp-validation-for="InterviewMode" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="InterviewRound" class="form-label">Interview Round</label>
+                                <input asp-for="InterviewRound" class="form-control" type="number" min="1" value="1" />
+                                <span asp-validation-for="InterviewRound" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-12 mb-3" id="meetingLinkDiv" style="display: none;">
+                                <label asp-for="MeetingLink" class="form-label">Meeting Link</label>
+                                <input asp-for="MeetingLink" class="form-control" placeholder="https://meet.google.com/..." />
+                                <span asp-validation-for="MeetingLink" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning" id="timeClashAlert" style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="timeClashMessage"></span>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-calendar-check me-2"></i>Schedule Interview
+                            </button>
+                            <a href="@Url.Action("Vacancies", "HR")" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function() {
+            // Show/hide meeting link based on interview mode
+            $('#InterviewMode').change(function() {
+                if ($(this).val() === 'Online') {
+                    $('#meetingLinkDiv').show();
+                } else {
+                    $('#meetingLinkDiv').hide();
+                    $('#MeetingLink').val('');
+                }
+            });
+
+            // Check time clash
+            $('#InterviewerId, #InterviewDate, #StartTime, #EndTime').change(function() {
+                checkTimeClash();
+            });
+
+            function checkTimeClash() {
+                var interviewerId = $('#InterviewerId').val();
+                var date = $('#InterviewDate').val();
+                var startTime = $('#StartTime').val();
+                var endTime = $('#EndTime').val();
+
+                if (interviewerId && date && startTime && endTime) {
+                    $.ajax({
+                        url: '@Url.Action("CheckTimeClash", "HR")',
+                        data: {
+                            interviewerId: interviewerId,
+                            date: date,
+                            startTime: startTime,
+                            endTime: endTime
+                        },
+                        success: function(response) {
+                            if (response.hasClash) {
+                                $('#timeClashAlert').show();
+                                $('#timeClashMessage').text('Interviewer already has an interview scheduled at this time!');
+                                $('button[type="submit"]').prop('disabled', true);
+                            } else {
+                                $('#timeClashAlert').hide();
+                                $('button[type="submit"]').prop('disabled', false);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+}

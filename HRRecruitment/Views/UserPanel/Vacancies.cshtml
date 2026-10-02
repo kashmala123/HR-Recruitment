@@ -1,0 +1,313 @@
+﻿@model IEnumerable<HRRecruitment.Models.Vacancy>
+@{
+    ViewBag.Title = "Available Vacancies";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+
+    var appliedVacancyIds = ViewBag.AppliedVacancyIds as HashSet<int> ?? new HashSet<int>();
+}
+
+<style>
+    /* ===== VACANCIES PAGE STYLES ===== */
+    .vacancies-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .vacancies-header h4 {
+        font-weight: 700;
+        font-size: 1.6rem;
+        background: linear-gradient(135deg, #fff, #ffb0c3);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .vacancies-header h4 i {
+        background: linear-gradient(95deg, #ff2b6e, #ff4d7a);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        font-size: 1.8rem;
+    }
+    .search-box {
+        max-width: 300px;
+    }
+    .search-box .form-control {
+        background: #111117;
+        border: 1px solid #2a2a33;
+        color: white;
+        border-radius: 40px;
+        padding: 0.6rem 1rem;
+        transition: all 0.2s;
+    }
+    .search-box .form-control:focus {
+        border-color: #ff2b6e;
+        box-shadow: 0 0 0 2px rgba(255,43,110,0.3);
+        background: #0a0a0f;
+    }
+
+    /* Vacancy cards */
+    .vacancy-card {
+        background: #111117;
+        border: 1px solid #2a2a33;
+        border-radius: 24px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .vacancy-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 0% 0%, rgba(255,43,110,0.03), transparent 70%);
+        pointer-events: none;
+    }
+    .vacancy-card:hover {
+        border-color: #ff2b6e;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 25px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,43,110,0.2);
+    }
+    .vacancy-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .vacancy-title i {
+        color: #ff2b6e;
+        font-size: 1.3rem;
+    }
+    .badge-new {
+        background: linear-gradient(95deg, #ff2b6e, #ff4d7a);
+        color: white;
+        border-radius: 40px;
+        padding: 0.2rem 0.8rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .vacancy-meta {
+        font-size: 0.8rem;
+        color: #9ca3af;
+        margin-bottom: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.2rem;
+    }
+    .vacancy-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .vacancy-meta i {
+        width: 1rem;
+        color: #ff2b6e;
+    }
+    .vacancy-description {
+        color: #e4e4e7;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .vacancy-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .btn-apply {
+        background: linear-gradient(95deg, #ff2b6e, #ff4d7a);
+        border: none;
+        color: white;
+        border-radius: 40px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+    .btn-apply:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(255,43,110,0.4);
+        filter: brightness(1.02);
+    }
+    .btn-applied {
+        background: rgba(255,43,110,0.12);
+        border: 1px solid #ff2b6e;
+        color: #ff8eae;
+        border-radius: 40px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 500;
+        cursor: default;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+    .badge-closed {
+        background: rgba(255,255,255,0.08);
+        color: #9ca3af;
+        border-radius: 40px;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .text-muted {
+        color: #9ca3af !important;
+        font-size: 0.75rem;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: #111117;
+        border-radius: 28px;
+        border: 1px solid #2a2a33;
+    }
+    .empty-state i {
+        font-size: 3.5rem;
+        color: #ff2b6e;
+        opacity: 0.5;
+        margin-bottom: 1rem;
+    }
+    .empty-state h5 {
+        color: white;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    .empty-state p {
+        color: #9ca3af;
+    }
+    .no-results-message {
+        margin-top: 1rem;
+    }
+</style>
+
+<div class="vacancies-header">
+    <h4>
+        <i class="fas fa-briefcase"></i> Available Positions
+    </h4>
+    <div class="search-box">
+        <input type="text" id="searchVacancy" class="form-control" placeholder="🔍 Search by title, department...">
+    </div>
+</div>
+
+<div id="vacanciesContainer">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-briefcase"></i>
+            <h5>No vacancies available</h5>
+            <p>Check back later for new opportunities.</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var vacancy in Model)
+        {
+            var isNew = (DateTime.UtcNow - vacancy.CreatedDate).TotalDays <= 7;
+            <div class="vacancy-card" data-title="@vacancy.JobTitle.ToLower()" data-dept="@vacancy.DepartmentId.ToString()">
+                <div class="vacancy-title">
+                    <i class="fas fa-bullhorn"></i> @vacancy.JobTitle
+                    @if (isNew)
+                    {
+                        <span class="badge-new">New</span>
+                    }
+                </div>
+                <div class="vacancy-meta">
+                    <span><i class="fas fa-building"></i> @(vacancy.Department?.DepartmentName ?? "General")</span>
+                    <span><i class="fas fa-users"></i> @vacancy.TotalOpenings opening(s)</span>
+                    <span><i class="far fa-calendar-alt"></i> Closing: @(vacancy.ClosingDate?.ToString("MMM dd, yyyy") ?? "Not specified")</span>
+                </div>
+                <div class="vacancy-description">
+                    @vacancy.JobDescription
+                </div>
+           <div class="vacancy-footer">
+    <div>
+        @if (vacancy.Status == "Open")
+        {
+            if (appliedVacancyIds.Contains(vacancy.VacancyId))
+            {
+                <span class="btn-applied"><i class="fas fa-check-circle"></i> Applied</span>
+            }
+            else
+            {
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("VacancyDetails", new { id = vacancy.VacancyId })" class="btn btn-outline-primary rounded-pill px-3 py-1">
+                        <i class="fas fa-info-circle"></i> Details
+                    </a>
+                    <form asp-action="Apply" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="vacancyId" value="@vacancy.VacancyId" />
+                        <button type="submit" class="btn-apply"><i class="fas fa-paper-plane"></i> Apply Now</button>
+                    </form>
+                </div>
+            }
+        }
+        else
+        {
+            <span class="badge-closed"><i class="fas fa-lock"></i> Closed</span>
+        }
+    </div>
+    <small class="text-muted"><i class="far fa-calendar-plus"></i> Posted: @vacancy.CreatedDate.ToString("MMM dd, yyyy")</small>
+</div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('searchVacancy').addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.vacancy-card');
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const title = card.getAttribute('data-title') || '';
+                const dept = card.getAttribute('data-dept') || '';
+                if (searchTerm === '' || title.includes(searchTerm) || dept.includes(searchTerm)) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            const container = document.getElementById('vacanciesContainer');
+            let emptyMsg = document.querySelector('.no-results-message');
+            if (visibleCount === 0 && cards.length > 0) {
+                if (!emptyMsg) {
+                    emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'empty-state no-results-message';
+                    emptyMsg.innerHTML = '<i class="fas fa-search"></i><h5>No matching vacancies</h5><p>Try a different keyword.</p>';
+                    container.appendChild(emptyMsg);
+                }
+            } else if (emptyMsg) {
+                emptyMsg.remove();
+            }
+        });
+    </script>
+}

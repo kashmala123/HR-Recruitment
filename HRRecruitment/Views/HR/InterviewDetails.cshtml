@@ -1,0 +1,184 @@
+﻿@model HRRecruitment.Models.Interview
+@{
+    ViewData["Title"] = "Interview Details";
+    Layout = "~/Views/Shared/_InterviewerLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="mb-1"><i class="fas fa-calendar-alt me-2 text-primary"></i>Interview Details</h4>
+                    <p class="text-muted mb-0">Interview #: @Model.InterviewNumber</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Interview Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr><th>Interview #</th><td>@Model.InterviewNumber</td></tr>
+                        <tr><th>Date</th><td>@Model.InterviewDate.ToString("dddd, dd MMMM yyyy")</td></tr>
+                        <tr><th>Time</th><td>@Model.StartTime.ToString(@"hh\:mm") - @Model.EndTime.ToString(@"hh\:mm")</td></tr>
+                        <tr><th>Mode</th><td><span class="badge bg-info">@Model.InterviewMode</span></td></tr>
+                        <tr><th>Round</th><td>Round @Model.InterviewRound</td></tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                @if (Model.Status == "Scheduled")
+                                {
+                                    <span class="badge bg-success">Scheduled</span>
+                                }
+                                else if (Model.Status == "Completed")
+                                {
+                                    <span class="badge bg-primary">Completed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Model.Status</span>
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Applicant Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr><th>Name</th><td>@Model.ApplicantVacancy?.Applicant?.FirstName @Model.ApplicantVacancy?.Applicant?.LastName</td></tr>
+                        <tr><th>Email</th><td>@Model.ApplicantVacancy?.Applicant?.Email</td></tr>
+                        <tr><th>Phone</th><td>@Model.ApplicantVacancy?.Applicant?.Phone</td></tr>
+                        <tr><th>Qualification</th><td>@(Model.ApplicantVacancy?.Applicant?.HighestQualification ?? "-")</td></tr>
+                        <tr><th>Experience</th><td>@(Model.ApplicantVacancy?.Applicant?.ExperienceYears?.ToString() ?? "0") years</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Vacancy Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr><th>Position</th><td>@Model.ApplicantVacancy?.Vacancy?.JobTitle</td></tr>
+                        <tr><th>Department</th><td>@Model.ApplicantVacancy?.Vacancy?.Department?.DepartmentName</td></tr>
+                        <tr><th>Description</th><td>@Model.ApplicantVacancy?.Vacancy?.JobDescription</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Status == "Scheduled")
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header" style="background:#1e2b4f; color:white;">
+                        <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Submit Result</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="resultForm" method="post" action="@Url.Action("SubmitResult", "Interviewer")">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.InterviewId" />
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Decision</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="result" value="Selected" id="select">
+                                            <label class="form-check-label" for="select">
+                                                <span class="badge bg-success">Select</span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="result" value="Rejected" id="reject">
+                                            <label class="form-check-label" for="reject">
+                                                <span class="badge bg-danger">Reject</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label fw-bold">Feedback</label>
+                                    <textarea name="feedback" class="form-control" rows="4" placeholder="Enter your feedback..."></textarea>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="confirmSubmit()">
+                                <i class="fas fa-check-circle me-2"></i>Submit Result
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.Status == "Completed")
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-@(Model.Result == "Selected" ? "success" : "danger")">
+                    <h5>Result: @Model.Result</h5>
+                    <p>Feedback: @(Model.Feedback ?? "No feedback provided")</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <a href="@Url.Action("MyInterviews")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to My Interviews
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmSubmit() {
+        const selected = document.querySelector('input[name="result"]:checked');
+        if (!selected) {
+        Swal.fire('No decision', 'Please select a decision (Select or Reject)', 'warning');
+        return;
+        }
+        const feedback = document.querySelector('textarea[name="feedback"]').value.trim();
+        if (!feedback) {
+        Swal.fire('No feedback', 'Please provide feedback', 'warning');
+        return;
+        }
+
+        Swal.fire({
+        title: 'Are you sure?',
+        text: 'This action cannot be undone.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#dc3545',
+        confirmButtonText: 'Yes, submit it!'
+        }).then((result) => {
+        if (result.isConfirmed) {
+        document.getElementById('resultForm').submit();
+        }
+        });
+        }
+    </script>
+}

@@ -1,0 +1,149 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="mb-1"><i class="fas fa-chart-bar me-2 text-primary"></i>Reports</h4>
+                    <p class="text-muted mb-0">View and generate recruitment reports</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Vacancy Report Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Vacancy Report</h5>
+                </div>
+                <div class="card-body">
+                    <p>View detailed report of all vacancies including:</p>
+                    <ul>
+                        <li>Total vacancies created</li>
+                        <li>Status distribution (Open/Closed/Suspended)</li>
+                        <li>Openings vs Filled positions</li>
+                        <li>Applicants per vacancy</li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="generateVacancyReport()">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interview Report Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Interview Report</h5>
+                </div>
+                <div class="card-body">
+                    <p>View detailed report of all interviews including:</p>
+                    <ul>
+                        <li>Total interviews scheduled</li>
+                        <li>Status distribution</li>
+                        <li>Selection/Rejection ratio</li>
+                        <li>Interviewer performance</li>
+                    </ul>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label">From Date</label>
+                            <input type="date" id="fromDate" class="form-control"
+                                   value="@DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">To Date</label>
+                            <input type="date" id="toDate" class="form-control"
+                                   value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success" onclick="generateInterviewReport()">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hiring Report Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-check me-2"></i>Hiring Report</h5>
+                </div>
+                <div class="card-body">
+                    <p>View detailed report of hired candidates including:</p>
+                    <ul>
+                        <li>Total hires by month</li>
+                        <li>Department wise hiring</li>
+                        <li>Time to hire statistics</li>
+                        <li>Selection rate trends</li>
+                    </ul>
+                    <button class="btn btn-info" onclick="generateHiringReport()">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applicant Report Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Applicant Report</h5>
+                </div>
+                <div class="card-body">
+                    <p>View detailed report of all applicants including:</p>
+                    <ul>
+                        <li>Total applicants by status</li>
+                        <li>Qualification distribution</li>
+                        <li>Experience analysis</li>
+                        <li>Application trends</li>
+                    </ul>
+                    <button class="btn btn-warning" onclick="generateApplicantReport()">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function generateVacancyReport() {
+            window.open('@Url.Action("VacancyReport", "HR")', '_blank');
+        }
+
+        function generateInterviewReport() {
+            var fromDate = $('#fromDate').val();
+            var toDate = $('#toDate').val();
+            var url = '@Url.Action("InterviewReport", "HR")?fromDate=' + fromDate + '&toDate=' + toDate;
+            window.open(url, '_blank');
+        }
+
+        function generateHiringReport() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Coming Soon',
+                text: 'Hiring report feature is under development'
+            });
+        }
+
+        function generateApplicantReport() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Coming Soon',
+                text: 'Applicant report feature is under development'
+            });
+        }
+    </script>
+}

@@ -1,0 +1,95 @@
+﻿@model HRRecruitment.ViewModels.HRDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+    ViewBag.HR = Model.CurrentHR;
+    ViewBag.OpenVacanciesCount = Model.OpenVacancies;
+    ViewBag.InProcessCount = Model.ApplicantsInProcess;
+    ViewBag.TodayInterviewsCount = Model.TodayInterviews;
+    ViewBag.NotificationCount = Model.PendingResults;
+}
+<div class="container-fluid px-4">
+    <div class="row mb-4"><div class="col-12"><div class="card bg-primary text-white shadow-lg"><div class="card-body"><div class="d-flex justify-content-between align-items-center"><div><h2 class="mb-2">Welcome back, @(Model.CurrentHR?.EmployeeName ?? "HR Manager")! 👋</h2><p class="mb-1"><i class="fas fa-id-card me-2"></i>Employee ID: @(Model.CurrentHR?.EmployeeNumber ?? "N/A")</p><p class="mb-0"><i class="fas fa-building me-2"></i>Department: @(Model.CurrentHR?.Department?.DepartmentName ?? "HR Department")</p></div><div class="text-center bg-white bg-opacity-25 p-3 rounded"><h3 class="mb-0">@DateTime.Now.ToString("dd")</h3><p class="mb-0 small">@DateTime.Now.ToString("MMMM yyyy")</p></div></div></div></div></div></div>
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6"><div class="card border-left-primary shadow h-100 py-2"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Vacancies</div><div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalVacancies</div><div class="mt-2 small"><span class="text-success me-2"><i class="fas fa-circle"></i> Open: @Model.OpenVacancies</span><span class="text-secondary me-2"><i class="fas fa-circle"></i> Closed: @Model.ClosedVacancies</span><span class="text-warning"><i class="fas fa-circle"></i> Suspended: @Model.SuspendedVacancies</span></div></div><div class="col-auto"><i class="fas fa-briefcase fa-2x text-gray-300"></i></div></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="card border-left-success shadow h-100 py-2"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Applicants</div><div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalApplicants</div><div class="mt-2 small"><span class="text-info me-2"><i class="fas fa-circle"></i> In Process: @Model.ApplicantsInProcess</span><span class="text-success"><i class="fas fa-circle"></i> Hired: @Model.HiredApplicants</span></div></div><div class="col-auto"><i class="fas fa-users fa-2x text-gray-300"></i></div></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="card border-left-info shadow h-100 py-2"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-info text-uppercase mb-1">Interviews</div><div class="h5 mb-0 font-weight-bold text-gray-800">@Model.UpcomingInterviews</div><div class="mt-2 small"><span class="text-primary me-2"><i class="fas fa-circle"></i> Today: @Model.TodayInterviews</span><span class="text-warning"><i class="fas fa-circle"></i> Pending: @Model.PendingResults</span></div></div><div class="col-auto"><i class="fas fa-calendar-check fa-2x text-gray-300"></i></div></div></div></div></div>
+        <div class="col-xl-3 col-md-6"><div class="card border-left-warning shadow h-100 py-2"><div class="card-body"><div class="row no-gutters align-items-center"><div class="col mr-2"><div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Quick Overview</div><div class="h5 mb-0 font-weight-bold text-gray-800">@(Model.TotalVacancies + Model.TotalApplicants)</div><div class="mt-2 small"><span class="text-dark">Total Records</span></div></div><div class="col-auto"><i class="fas fa-chart-pie fa-2x text-gray-300"></i></div></div></div></div></div>
+    </div>
+    <div class="row mb-4"><div class="col-xl-6"><div class="card shadow mb-4"><div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Vacancy Status Distribution</h6></div><div class="card-body"><canvas id="vacancyChart" style="height:300px;"></canvas></div></div></div><div class="col-xl-6"><div class="card shadow mb-4"><div class="card-header py-3"><h6 class="m-0 font-weight-bold text-success">Applicant Status Distribution</h6></div><div class="card-body"><canvas id="applicantChart" style="height:300px;"></canvas></div></div></div></div>
+    <div class="row mb-4"><div class="col-12"><div class="card shadow"><div class="card-header py-3 d-flex justify-content-between align-items-center"><h6 class="m-0 font-weight-bold text-primary">Recent Vacancies</h6><a href="@Url.Action("Vacancies", "HR")" class="btn btn-sm btn-primary">View All <i class="fas fa-arrow-right ms-2"></i></a></div><div class="card-body">@if(Model.RecentVacancies != null && Model.RecentVacancies.Any()){
+    <div class="table-responsive"><table class="table table-bordered table-hover"><thead class="table-light"><tr><th>Vacancy #</th><th>Job Title</th><th>Department</th><th>Openings</th><th>Status</th><th>Created Date</th><th>Action</th></tr></thead><tbody>@foreach(var vacancy in Model.RecentVacancies){
+    <tr><td><strong>@vacancy.VacancyNumber</strong></td><td>@vacancy.JobTitle</td><td>@(vacancy.Department?.DepartmentName ?? "N/A")</td><td><span class="badge bg-info">@vacancy.RemainingOpenings/@vacancy.TotalOpenings</span></td><td>@if(vacancy.Status=="Open"){
+    <span class="badge bg-success">Open</span>
+        }else if (vacancy.Status == "Closed")
+    {
+
+        <span class="badge bg-secondary">Closed</span>
+    }
+    else
+    {
+
+        <span class="badge bg-warning">@vacancy.Status</span>
+    }
+</td><td>@vacancy.CreatedDate.ToString("dd MMM yyyy")</td><td><a href="@Url.Action("VacancyDetails", "HR", new { id = vacancy.VacancyId })" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a></td></tr>
+        }
+</tbody></table></div>
+        }else
+    {
+
+        <div class="text-center py-4"><i class="fas fa-briefcase fa-3x text-muted mb-3"></i><p class="text-muted">No vacancies found</p><a href="@Url.Action("CreateVacancy", "HR")" class="btn btn-primary">Create New Vacancy</a></div>
+    }
+</div></div></div></div>
+    <div class="row mb-4"><div class="col-12"><div class="card shadow"><div class="card-header py-3 d-flex justify-content-between align-items-center"><h6 class="m-0 font-weight-bold text-success">Recent Applicants</h6><a href="@Url.Action("Applicants", "HR")" class="btn btn-sm btn-success">View All <i class="fas fa-arrow-right ms-2"></i></a></div><div class="card-body">@if(Model.RecentApplicants != null && Model.RecentApplicants.Any()){
+    <div class="table-responsive"><table class="table table-bordered table-hover"><thead class="table-light"><tr><th>Applicant #</th><th>Name</th><th>Email</th><th>Phone</th><th>Qualification</th><th>Status</th><th>Action</th></tr></thead><tbody>@foreach(var applicant in Model.RecentApplicants){
+    <tr><td><strong>@applicant.ApplicantNumber</strong></td><td>@applicant.FirstName @applicant.LastName</td><td>@applicant.Email</td><td>@applicant.Phone</td><td>@(applicant.HighestQualification ?? "-")</td><td>@if(applicant.Status=="Hired"){
+    <span class="badge bg-success">Hired</span>
+        }else if (applicant.Status == "In Process")
+    {
+
+        <span class="badge bg-primary">In Process</span>
+    }
+    else if (applicant.Status == "Rejected")
+    {
+
+        <span class="badge bg-danger">Rejected</span>
+    }
+    else
+    {
+
+        <span class="badge bg-secondary">@applicant.Status</span>
+    }
+</td><td><a href="@Url.Action("EditApplicant", "HR", new { id = applicant.ApplicantId })" class="btn btn-sm btn-outline-success"><i class="fas fa-edit"></i></a></td></tr>
+        }
+</tbody></table></div>
+        }else
+    {
+
+        <div class="text-center py-4"><i class="fas fa-users fa-3x text-muted mb-3"></i><p class="text-muted">No applicants found</p><a href="@Url.Action("CreateApplicant", "HR")" class="btn btn-success">Create New Applicant</a></div>
+    }
+</div></div></div></div>
+    @if (Model.TodayInterviewList != null && Model.TodayInterviewList.Any())
+    {
+        <div class="row"><div class="col-12"><div class="card shadow"><div class="card-header py-3 bg-info text-white"><h6 class="m-0 font-weight-bold"><i class="fas fa-calendar-day me-2"></i>Today's Interviews (@Model.TodayInterviewList.Count)</h6></div><div class="card-body"><div class="table-responsive"><table class="table table-bordered"><thead class="table-light"><tr><th>Time</th><th>Interview #</th><th>Applicant</th><th>Position</th><th>Interviewer</th><th>Mode</th><th>Status</th><th>Action</th></tr></thead><tbody>@foreach(var interview in Model.TodayInterviewList){
+        <tr><td>@interview.StartTime.ToString(@"hh\:mm")</td><td><strong>@interview.InterviewNumber</strong></td><td>@(interview.ApplicantVacancy?.Applicant?.FirstName ?? "") @(interview.ApplicantVacancy?.Applicant?.LastName ?? "")</td><td>@(interview.ApplicantVacancy?.Vacancy?.JobTitle ?? "N/A")</td><td>@(interview.Interviewer?.EmployeeName ?? "N/A")</td><td><span class="badge bg-info">@interview.InterviewMode</span></td><td>@if(interview.Status == "Scheduled"){
+        <span class="badge bg-success">Scheduled</span>
+    }
+    else if (interview.Status == "Completed")
+    {
+
+        <span class="badge bg-primary">Completed</span>
+    }
+    else
+    {
+
+        <span class="badge bg-secondary">@interview.Status</span>
+    }
+</td><td><a href="@Url.Action("InterviewDetails", "HR", new { id = interview.InterviewId })" class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></a></td></tr>
+        }
+</tbody></table></div></div></div></div></div>
+        }
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>$(document).ready(function(){new Chart(document.getElementById('vacancyChart').getContext('2d'),{type:'doughnut',data:{labels:['Open','Closed','Suspended'],datasets:[{data:[@Model.OpenVacancies,@Model.ClosedVacancies,@Model.SuspendedVacancies],backgroundColor:['#28a745','#6c757d','#ffc107'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});new Chart(document.getElementById('applicantChart').getContext('2d'),{type:'bar',data:{labels:['In Process','Hired'],datasets:[{label:'Number of Applicants',data:[@Model.ApplicantsInProcess,@Model.HiredApplicants],backgroundColor:['#17a2b8','#28a745'],borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{display:true}}}}});});</script>
+}

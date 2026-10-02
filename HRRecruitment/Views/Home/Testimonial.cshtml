@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Testimonial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Header Start -->
+<div class="page-header pb-5">
+    <div class="container text-center py-5">
+        <h1 class="display-4 text-uppercase mb-3 animated slideInDown">Testimonial</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb justify-content-center text-uppercase mb-0">
+                <li class="breadcrumb-item"><a class="text-white" asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
+                <li class="breadcrumb-item text-primary active" aria-current="page">Testimonial</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Header End -->
+<!-- Testimonial Start -->
+<div class="container-fluid py-5 bg-secondary">
+    <div class="container py-5">
+        <div class="text-center">
+            <div class="title wow fadeInUp" data-wow-delay="0.1s">
+                <div class="title-center">
+                    <h5>Testimonial</h5>
+                    <h1>Our Clients Say</h1>
+                </div>
+            </div>
+        </div>
+        <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.3s">
+            <div class="testimonial-item text-center"
+                 data-dot="<img class='img-fluid' src='@Url.Content("~/img/testimonial-1.jpg")' alt=''>">
+                <p class="fs-5">
+                    "Just wanted to share a quick note and let you know that you guys do a really good job.
+                    I'm glad I decided to work with you."
+                </p>
+                <h5 class="text-uppercase">Joanne Irwin</h5>
+                <span class="text-primary">Profession</span>
+            </div>
+            <div class="testimonial-item text-center"
+                 data-dot="<img class='img-fluid' src='@Url.Content("~/img/testimonial-2.jpg")' alt=''>">
+                <p class="fs-5">
+                    "It's really great how easy your websites are to update and manage.
+                    I never have any problem at all."
+                </p>
+                <h5 class="text-uppercase">Lana Anderson</h5>
+                <span class="text-primary">Profession</span>
+            </div>
+            <div class="testimonial-item text-center"
+                 data-dot="<img class='img-fluid' src='@Url.Content("~/img/testimonial-3.jpg")' alt=''>">
+                <p class="fs-5">
+                    "The team delivered results that exceeded our expectations, and the ROI was clear within the first quarter."
+                </p>
+                <h5 class="text-uppercase">Pamela Torney</h5>
+                <span class="text-primary">Profession</span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Testimonial End -->

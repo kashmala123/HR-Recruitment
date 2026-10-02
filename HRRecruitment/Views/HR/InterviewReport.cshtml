@@ -1,0 +1,185 @@
+﻿@model HRRecruitment.ViewModels.InterviewReportViewModel
+@{
+    ViewData["Title"] = "Interview Report";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="mb-1"><i class="fas fa-chart-line me-2 text-primary"></i>Interview Report</h4>
+                    <p class="text-muted mb-0">
+                        @if (Model.FromDate.HasValue && Model.ToDate.HasValue)
+                        {
+                            <text>Period: @Model.FromDate.Value.ToString("dd MMM yyyy") - @Model.ToDate.Value.ToString("dd MMM yyyy")</text>
+                        }
+                        else
+                        {
+                            <text>All interviews</text>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3>@Model.TotalInterviews</h3>
+                    <p class="text-muted">Total Interviews</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3>@Model.ScheduledInterviews</h3>
+                    <p class="text-muted">Scheduled</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3>@Model.CompletedInterviews</h3>
+                    <p class="text-muted">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3>@Model.CancelledInterviews</h3>
+                    <p class="text-muted">Cancelled</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Results Distribution</h5>
+                </div>
+                <div class="card-body text-center">
+                    <canvas id="resultChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Selection Rate</h5>
+                </div>
+                <div class="card-body text-center">
+                    <h2>@(Model.CompletedInterviews == 0 ? 0 : (Model.SelectedCount * 100 / Model.CompletedInterviews))%</h2>
+                    <p>Selection Rate</p>
+                    <div class="progress" style="height: 30px;">
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: @(Model.CompletedInterviews == 0 ? 0 : (Model.SelectedCount * 100 / Model.CompletedInterviews))%">
+                            @(Model.CompletedInterviews == 0 ? 0 : (Model.SelectedCount * 100 / Model.CompletedInterviews))%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Interview Details</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+<th>Interview #</th>
+                        <th>Date</th>
+                        <th>Applicant</th>
+                        <th>Position</th>
+                        <th>Interviewer</th>
+                        <th>Result</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var interview in Model.Interviews)
+                        {
+                            <tr>
+                                <td>@interview.InterviewNumber</td>
+                                <td>@interview.InterviewDate.ToString("dd MMM yyyy")</td>
+                                <td>@(interview.ApplicantVacancy?.Applicant?.FirstName ?? "") @(interview.ApplicantVacancy?.Applicant?.LastName ?? "")</td>
+                                <td>@(interview.ApplicantVacancy?.Vacancy?.JobTitle ?? "N/A")</td>
+                                <td>@(interview.Interviewer?.EmployeeName ?? "N/A")</td>
+                                <td>
+                                    @if (interview.Result == "Selected")
+                                    {
+                                        <span class="badge bg-success">Selected</span>
+                                    }
+                                    else if (interview.Result == "Rejected")
+                                    {
+                                        <span class="badge bg-danger">Rejected</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@interview.Result</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (interview.Status == "Scheduled")
+                                    {
+                                        <span class="badge bg-success">Scheduled</span>
+                                    }
+                                    else if (interview.Status == "Completed")
+                                    {
+                                        <span class="badge bg-primary">Completed</span>
+                                    }
+                                    else if (interview.Status == "Cancelled")
+                                    {
+                                        <span class="badge bg-danger">Cancelled</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@interview.Status</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('resultChart').getContext('2d');
+        new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+        labels: ['Selected (@Model.SelectedCount)', 'Rejected (@Model.RejectedCount)', 'Pending (@Model.PendingResults)'],
+        datasets: [{
+        data: [@Model.SelectedCount, @Model.RejectedCount, @Model.PendingResults],
+        backgroundColor: ['#28a745', '#dc3545', '#ffc107'],
+        borderWidth: 0
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+        legend: { position: 'bottom' }
+        }
+        }
+        });
+    </script>
+}

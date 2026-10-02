@@ -1,0 +1,112 @@
+﻿@{
+    ViewData["Title"] = "Contact";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model HRRecruitment.Models.ContactViewModel
+
+<!-- Header Start -->
+<div class="page-header pb-5">
+    <div class="container text-center py-5">
+        <h1 class="display-4 text-uppercase mb-3 animated slideInDown">Contact</h1>
+        <nav aria-label="breadcrumb animated slideInDown">
+            <ol class="breadcrumb justify-content-center text-uppercase mb-0">
+                <li class="breadcrumb-item"><a class="text-white" asp-controller="Home" asp-action="Index">Home</a></li>
+                <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
+                <li class="breadcrumb-item text-primary active" aria-current="page">Contact</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<!-- Header End -->
+<!-- Contact Start -->
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <div class="title wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="title-left">
+                        <h5>Contact</h5>
+                        <h1>Please Contact Us</h1>
+                    </div>
+                </div>
+                <h4 class="lh-base mb-4">Receive messages instantly with our form. We'll respond within 24 hours.</h4>
+                <table class="table table-dark mb-0 wow fadeInUp" data-wow-delay="0.3s">
+                    <tr><th>PHONE</th><td>+92 034573856</td></tr>
+                    <tr><th>E-MAIL</th><td>HRRecruitment@gmail.com</td></tr>
+                    <tr><th>ADDRESS</th><td>123 Street, DHA, Karachi ,Pakistan</td></tr>
+                    <tr class="border-dark">
+                        <th>FOLLOW US</th>
+                        <td>
+                            <a class="me-1" href="#!"><i class="fab fa-x-twitter"></i></a>
+                            <a class="me-1" href="#!"><i class="fab fa-facebook-f"></i></a>
+                            <a class="me-1" href="#!"><i class="fab fa-youtube"></i></a>
+                            <a class="me-1" href="#!"><i class="fab fa-linkedin-in"></i></a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.5s">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                <form asp-controller="Home" asp-action="Contact" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="Name" class="form-control bg-secondary border-0" placeholder="Your Name" pattern="^[a-zA-Z\s]+$" title="Name can only contain letters and spaces">
+                                    <label asp-for="Name">Your Name</label>
+                                </div>
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="Email" class="form-control bg-secondary border-0" placeholder="Your Email">
+                                        <label asp-for="Email">Your Email</label>
+                                    </div>
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input asp-for="Subject" class="form-control bg-secondary border-0" placeholder="Subject">
+                                            <label asp-for="Subject">Subject</label>
+                                        </div>
+                                        <span asp-validation-for="Subject" class="text-danger small"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <textarea asp-for="Message" class="form-control bg-secondary border-0" placeholder="Leave a message here" style="height: 150px"></textarea>
+                                            <label asp-for="Message">Message</label>
+                                        </div>
+                                        <span asp-validation-for="Message" class="text-danger small"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-outline-primary border-2 w-100 py-3">Send Message</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Contact End -->
+            <!-- Google Map Start -->
+            <div class="container-fluid p-0 wow fadeIn" data-wow-delay="0.3s">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd" frameborder="0" allowfullscreen="" aria-hidden="false" tabindex="0" style="width: 100%; height: 500px; filter: grayscale(100%) invert(92%) contrast(83%); border: 0;"></iframe>
+            </div>
+            <!-- Google Map End -->
+            @section Scripts {
+                <partial name="_ValidationScriptsPartial" />
+            }

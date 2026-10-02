@@ -1,0 +1,47 @@
+## Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rtifacts/
+*.dll
+*.pdb
+*.cache
+
+## Visual Studio / Rider / VS Code
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+.idea/
+*.rsuser
+.vscode/*
+!.vscode/extensions.json
+
+## User uploads (keep folders, ignore files)
+**/wwwroot/uploads/profiles/*
+!**/wwwroot/uploads/profiles/.gitkeep
+**/wwwroot/uploads/resumes/*
+!**/wwwroot/uploads/resumes/.gitkeep
+**/wwwroot/resumes/*
+
+## Secrets / local config (optional: uncomment if you put secrets there)
+# appsettings.Development.json
+# appsettings.*.local.json
+
+## OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## NuGet
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+## Logs
+*.log
+logs/

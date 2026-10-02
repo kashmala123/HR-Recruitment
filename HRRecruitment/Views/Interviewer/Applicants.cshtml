@@ -1,0 +1,160 @@
+﻿@model IEnumerable<HRRecruitment.Models.Applicant>
+@{
+    ViewData["Title"] = "Applicants";
+    Layout = "~/Views/Shared/_InterviewerLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="mb-1"><i class="fas fa-users me-2 text-primary"></i>Applicants</h4>
+                    <p class="text-muted mb-0">View all job applicants</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    @{
+        var applicants = Model?.ToList() ?? new List<HRRecruitment.Models.Applicant>();
+        var totalCount = applicants.Count;
+        var hiredCount = applicants.Count(a => a.Status == "Hired");
+        var inProcessCount = applicants.Count(a => a.Status == "In Process");
+        var avgExperience = applicants.Any() ? applicants.Average(a => a.ExperienceYears ?? 0).ToString("F1") : "0";
+    }
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3 class="text-primary mb-0">@totalCount</h3>
+                    <p class="text-muted mb-0">Total Applicants</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3 class="text-success mb-0">@hiredCount</h3>
+                    <p class="text-muted mb-0">Hired</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3 class="text-warning mb-0">@inProcessCount</h3>
+                    <p class="text-muted mb-0">In Process</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow text-center">
+                <div class="card-body">
+                    <h3 class="text-info mb-0">@avgExperience</h3>
+                    <p class="text-muted mb-0">Avg Experience</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-10">
+                            <input type="text" name="searchTerm" class="form-control"
+                                   placeholder="Search by name, email, or applicant number..."
+                                   value="@Context.Request.Query["searchTerm"]" />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applicants Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Applicants List</h5>
+                </div>
+                <div class="card-body">
+                    @if (applicants.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Applicant #</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Qualification</th>
+                                        <th>Experience</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var applicant in applicants)
+                                    {
+                                        <tr>
+                                            <td><strong>@applicant.ApplicantNumber</strong></td>
+                                            <td>@applicant.FirstName @applicant.LastName</td>
+                                            <td>@applicant.Email</td>
+                                            <td>@(applicant.HighestQualification ?? "-")</td>
+                                            <td>@(applicant.ExperienceYears?.ToString() ?? "0") yrs</td>
+                                            <td>
+                                                @if (applicant.Status == "Hired")
+                                                {
+                                                    <span class="badge bg-success">Hired</span>
+                                                }
+                                                else if (applicant.Status == "In Process")
+                                                {
+                                                    <span class="badge bg-primary">In Process</span>
+                                                }
+                                                else if (applicant.Status == "Rejected")
+                                                {
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">@applicant.Status</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("ApplicantDetails", "Interviewer", new { id = applicant.ApplicantId })"
+                                                   class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No applicants found</h5>
+                            <p class="text-muted">There are no applicants in the system.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

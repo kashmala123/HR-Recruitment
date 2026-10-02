@@ -1,0 +1,147 @@
+﻿@model IEnumerable<HRRecruitment.Models.Interview>
+@{
+    ViewData["Title"] = "Interviews";
+    Layout = "~/Views/Shared/_HRLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h4 class="mb-1"><i class="fas fa-calendar-alt me-2 text-primary"></i>Interview Management</h4>
+                    <p class="text-muted mb-0">View and manage all scheduled interviews</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">From Date</label>
+                            <input type="date" name="fromDate" class="form-control" value="@ViewBag.FromDate" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">To Date</label>
+                            <input type="date" name="toDate" class="form-control" value="@ViewBag.ToDate" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select">
+                                <option value="All">All Status</option>
+                                <option value="Scheduled" selected="@(ViewBag.Status == "Scheduled")">Scheduled</option>
+                                <option value="Completed" selected="@(ViewBag.Status == "Completed")">Completed</option>
+                                <option value="Cancelled" selected="@(ViewBag.Status == "Cancelled")">Cancelled</option>
+                                <option value="Rescheduled" selected="@(ViewBag.Status == "Rescheduled")">Rescheduled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interviews List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Interview #</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Applicant</th>
+                                        <th>Position</th>
+                                        <th>Interviewer</th>
+                                        <th>Mode</th>
+                                        <th>Status</th>
+                                        <th>Result</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var interview in Model)
+                                    {
+                                        <tr>
+                                            <td><strong>@interview.InterviewNumber</strong></td>
+                                            <td>@interview.InterviewDate.ToString("dd MMM yyyy")</td>
+                                            <td>@interview.StartTime.ToString(@"hh\:mm") - @interview.EndTime.ToString(@"hh\:mm")</td>
+                                            <td>@interview.ApplicantVacancy?.Applicant?.FirstName @interview.ApplicantVacancy?.Applicant?.LastName</td>
+                                            <td>@interview.ApplicantVacancy?.Vacancy?.JobTitle</td>
+                                            <td>@interview.Interviewer?.EmployeeName</td>
+                                            <td>
+                                                <span class="badge bg-info">@interview.InterviewMode</span>
+                                            </td>
+                                            <td>
+                                                @if (interview.Status == "Scheduled")
+                                                {
+                                                    <span class="badge bg-success">Scheduled</span>
+                                                }
+                                                else if (interview.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-primary">Completed</span>
+                                                }
+                                                else if (interview.Status == "Cancelled")
+                                                {
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning">@interview.Status</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (interview.Result == "Selected")
+                                                {
+                                                    <span class="badge bg-success">Selected</span>
+                                                }
+                                                else if (interview.Result == "Rejected")
+                                                {
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Pending</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("InterviewDetails", "HR", new { id = interview.InterviewId })"
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">No interviews found</h5>
+                            <p class="text-muted">Schedule interviews from vacancy details page</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

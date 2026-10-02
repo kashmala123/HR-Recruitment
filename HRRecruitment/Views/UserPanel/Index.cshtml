@@ -1,0 +1,357 @@
+﻿@using HRRecruitment.Models
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+
+    var recentActivities = ViewBag.RecentActivities as List<ApplicantActivityLog> ?? new List<ApplicantActivityLog>();
+}
+
+<style>
+    /* ========== BLACK & PINK THEME – DASHBOARD ========== */
+    :root {
+        --primary-pink: #ff2b6e;
+        --primary-pink-dark: #ff4d7a;
+        --primary-pink-light: #ff8eae;
+        --theme-black: #000000;
+        --theme-dark-bg: #0a0a0f;
+        --theme-card-bg: #111117;
+        --theme-border: #2a2a33;
+        --text-light: #ffffff;
+        --text-muted: #b0b0c0;
+    }
+
+    body {
+        background: var(--theme-black) !important;
+        color: var(--text-light) !important;
+    }
+
+    .content-wrapper {
+        background: var(--theme-black);
+        padding: 2rem;
+        flex: 1;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .welcome-banner {
+        background: linear-gradient(135deg, var(--primary-pink) 0%, var(--primary-pink-dark) 100%);
+        border-radius: 24px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 25px -5px rgba(255,43,110,0.3);
+    }
+    .welcome-banner::after {
+        content: '\f0c0';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        font-size: 150px;
+        color: rgba(255,255,255,0.08);
+        pointer-events: none;
+    }
+    .welcome-banner h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+    .welcome-banner p {
+        color: rgba(255,255,255,0.85);
+        font-size: 0.95rem;
+    }
+    .badge-light {
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(4px);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 40px;
+        font-weight: 500;
+    }
+
+    .stat-card {
+        background: var(--theme-card-bg);
+        border: 1px solid var(--theme-border);
+        border-radius: 20px;
+        padding: 1.25rem;
+        transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        height: 100%;
+        color: var(--text-light);
+    }
+    .stat-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--primary-pink);
+        box-shadow: 0 12px 20px -8px rgba(255,43,110,0.2);
+    }
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    .stat-card h6 {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        margin-top: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    .stat-card h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-light);
+        margin: 0;
+    }
+    .stat-card span.text-success {
+        color: #10b981 !important;
+    }
+    .stat-card span.text-primary {
+        color: var(--primary-pink) !important;
+    }
+    .stat-card span.text-warning {
+        color: #f59e0b !important;
+    }
+
+    .activity-card {
+        background: var(--theme-card-bg);
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid var(--theme-border);
+        margin-top: 1.5rem;
+    }
+    .activity-card .card-header {
+        background: var(--theme-card-bg);
+        border-bottom: 1px solid var(--theme-border);
+        padding: 1rem 1.25rem;
+    }
+    .activity-card .card-header h5 {
+        font-weight: 700;
+        color: var(--text-light);
+        margin: 0;
+        font-size: 1.1rem;
+    }
+    .table-dashboard {
+        margin-bottom: 0;
+        color: var(--text-light);
+    }
+    .table-dashboard thead th {
+        background: rgba(10,10,15,0.6);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid var(--theme-border);
+        padding: 0.75rem 1rem;
+    }
+    .table-dashboard tbody td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--theme-border);
+        vertical-align: middle;
+        color: var(--text-light);
+    }
+    .table-dashboard tbody tr:hover td {
+        background: rgba(255,43,110,0.05);
+    }
+    .badge-activity {
+        background: rgba(255,43,110,0.12);
+        color: var(--primary-pink-light);
+        border-radius: 40px;
+        padding: 4px 12px;
+        font-size: 0.7rem;
+        font-weight: 500;
+    }
+
+    .quick-actions-title {
+        font-weight: 700;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+    .quick-action-btn {
+        background: var(--theme-card-bg);
+        border: 1px solid var(--theme-border);
+        border-radius: 20px;
+        padding: 1rem;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: block;
+        color: var(--text-light);
+    }
+    .quick-action-btn:hover {
+        border-color: var(--primary-pink);
+        background: rgba(255,43,110,0.05);
+        transform: translateY(-2px);
+    }
+    .quick-action-btn i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary-pink);
+    }
+    .quick-action-btn span {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    @@media (max-width: 768px) {
+        .welcome-banner h2 { font-size: 1.4rem; }
+        .stat-card h2 { font-size: 1.5rem; }
+        .quick-action-btn i { font-size: 1.2rem; }
+    }
+</style>
+
+<div class="welcome-banner d-flex flex-wrap justify-content-between align-items-center">
+    <div>
+        <h2 id="greetingText">Welcome back, @ViewBag.ApplicantName! 👋</h2>
+        <p class="mb-2">You have <strong>@ViewBag.ScheduledInterviews</strong> interview(s) scheduled.</p>
+        <div class="d-flex gap-3 mt-3">
+            <span class="badge-light"><i class="fas fa-id-card me-1"></i> ID: @ViewBag.ApplicantId</span>
+            <span class="badge-light"><i class="fas fa-tag me-1"></i> Status: @ViewBag.Status</span>
+        </div>
+    </div>
+    <div class="text-end mt-3 mt-md-0">
+        <h1 class="display-4 fw-bold mb-0" id="clockText" style="color: white;">00:00</h1>
+        <p class="mb-0" style="color: rgba(255,255,255,0.8);">@DateTime.Now.ToString("dddd, MMMM dd")</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Stats & Activity -->
+    <div class="col-lg-8">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div class="icon-box" style="background: rgba(255,43,110,0.12); color: var(--primary-pink);">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <span class="text-primary fw-bold small">Total</span>
+                    </div>
+                    <h6>My Applications</h6>
+                    <h2>@ViewBag.ApplicationsCount</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div class="icon-box" style="background: rgba(255,43,110,0.12); color: var(--primary-pink);">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <span class="text-warning fw-bold small">Upcoming</span>
+                    </div>
+                    <h6>Scheduled Interviews</h6>
+                    <h2>@ViewBag.ScheduledInterviews</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between">
+                        <div class="icon-box" style="background: rgba(255,43,110,0.12); color: var(--primary-pink);">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="text-success fw-bold small">Current</span>
+                    </div>
+                    <h6>Application Status</h6>
+                    <h2>@ViewBag.Status</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Card -->
+        <div class="activity-card">
+            <div class="card-header">
+                <h5><i class="fas fa-history me-2" style="color: var(--primary-pink);"></i> Recent System Activity</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dashboard">
+                    <thead>
+                        <tr>
+<th class="ps-4">Activity</th>
+                            <th>Category</th>
+                            <th>Time</th>
+                            <th class="pe-4 text-end">Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            @if (recentActivities.Any())
+                            {
+                                foreach (var log in recentActivities)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <strong>@log.ActionType</strong><br>
+                                            <small class="text-muted">@log.Description</small>
+                                        </td>
+                                        <td><span class="badge-activity">Applicant</span></td>
+                                        <td>@log.Timestamp.ToString("hh:mm tt")</td>
+                                        <td class="pe-4 text-end text-success"><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-4 text-muted">No recent activities</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Quick Actions -->
+        <div class="col-lg-4">
+            <div class="quick-actions-title">Quick Actions</div>
+            <div class="row g-3">
+                <div class="col-6">
+                    <a href="@Url.Action("MyApplications", "UserPanel")" class="quick-action-btn">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Applications</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="@Url.Action("MyProfile", "UserPanel")" class="quick-action-btn">
+                        <i class="fas fa-user-edit"></i>
+                        <span>Profile</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="@Url.Action("Help", "UserPanel")" class="quick-action-btn">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a href="@Url.Action("ChangePassword", "UserPanel")" class="quick-action-btn">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Security</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateUI() {
+            const now = new Date();
+            const hours = now.getHours();
+            document.getElementById('clockText').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            let greet = hours < 12 ? "Good Morning" : hours < 17 ? "Good Afternoon" : "Good Evening";
+            document.getElementById('greetingText').innerText = `${greet}, @ViewBag.ApplicantName! 👋`;
+        }
+        setInterval(updateUI, 1000);
+        updateUI();
+    </script>
+}

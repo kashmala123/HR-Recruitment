@@ -1,0 +1,198 @@
+﻿@model HRRecruitment.Models.ApplicantRegisterViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - HR Recruitment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #050508;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            position: relative;
+        }
+        /* Pink glitter effect – static radial gradients */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 43, 110, 0.15) 1px, transparent 1px),
+                radial-gradient(circle at 80% 40%, rgba(255, 43, 110, 0.12) 1px, transparent 1px),
+                radial-gradient(circle at 30% 70%, rgba(255, 43, 110, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 70% 85%, rgba(255, 43, 110, 0.08) 1px, transparent 1px);
+            background-size: 40px 40px, 60px 60px, 80px 80px, 100px 100px;
+            background-repeat: repeat;
+            pointer-events: none;
+        }
+        .register-card {
+            background: #111117;
+            border-radius: 24px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 480px;
+            border: 1px solid rgba(255, 43, 110, 0.2);
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+        }
+        .logo-area {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .logo-area img {
+            height: 50px;
+            width: auto;
+        }
+        .logo-area h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 0.3rem;
+            background: linear-gradient(135deg, #fff, #ffb0c3);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .form-control {
+            background-color: #0e0e16;
+            border: 1px solid #2a2a35;
+            color: #e4e4e7;
+            border-radius: 12px;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+        }
+        .form-control:focus {
+            background-color: #0e0e16;
+            border-color: #ff2b6e;
+            box-shadow: 0 0 0 2px rgba(255,43,110,0.3);
+            color: #fff;
+        }
+        .btn-pink {
+            background: linear-gradient(95deg, #ff2b6e, #ff4d7a);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 40px;
+            padding: 0.65rem;
+            transition: all 0.2s;
+        }
+        .btn-pink:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(255,43,110,0.3);
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #b0b0c0;
+            margin-bottom: 0.25rem;
+        }
+        .text-muted {
+            color: #9ca3af !important;
+            font-size: 0.8rem;
+        }
+        a {
+            color: #ff2b6e;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .text-danger {
+            color: #ff7b9c !important;
+            font-size: 0.7rem;
+        }
+        .mb-3 {
+            margin-bottom: 0.9rem !important;
+        }
+        .mb-4 {
+            margin-bottom: 1rem !important;
+        }
+        .mt-3 {
+            margin-top: 0.75rem !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-card">
+        <div class="logo-area">
+            <img src="~/img/download.png" alt="HR Recruitment" style="height: 55px;">
+            <h3>Create Account</h3>
+            <p class="text-muted">Join as an applicant</p>
+        </div>
+
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger text-center mb-3" })
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.FullName, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", placeholder = "Your full name", pattern = @"^[a-zA-Z\s]+$", title = "Name can only contain letters and spaces" })
+                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "you@example.com" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                <div class="position-relative">
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "••••••••", id = "Password" })
+                    <span class="position-absolute top-50 end-0 translate-middle-y me-3" style="cursor:pointer;" onclick="togglePassword('Password', this)">
+                        <i class="fas fa-eye text-muted"></i>
+                    </span>
+                </div>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-4">
+                @Html.LabelFor(m => m.ConfirmPassword, new { @class = "form-label" })
+                <div class="position-relative">
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "••••••••", id = "ConfirmPassword" })
+                    <span class="position-absolute top-50 end-0 translate-middle-y me-3" style="cursor:pointer;" onclick="togglePassword('ConfirmPassword', this)">
+                        <i class="fas fa-eye text-muted"></i>
+                    </span>
+                </div>
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+
+            <button type="submit" class="btn btn-pink w-100">Register</button>
+
+            <div class="text-center mt-3">
+                <small>Already have an account? <a asp-action="Login">Login here</a></small>
+            </div>
+        }
+    </div>
+    <script>
+        function togglePassword(inputId, el) {
+            const input = document.getElementById(inputId);
+            const icon = el.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

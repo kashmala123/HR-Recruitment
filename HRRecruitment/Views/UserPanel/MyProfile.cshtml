@@ -1,0 +1,315 @@
+﻿@model HRRecruitment.Models.UserProfileVM
+@{
+    ViewBag.Title = "My Profile";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<style>
+    /* ========== PROFILE PAGE – MODERN CENTERED CARD ========== */
+    :root {
+        --primary-pink: #ff2b6e;
+        --primary-pink-dark: #ff4d7a;
+        --theme-black: #0a0a0f;
+        --theme-card-bg: #111117;
+        --theme-border: #2a2a33;
+        --text-light: #ffffff;
+        --text-muted: #b0b0c0;
+    }
+
+    /* Override content-wrapper to remove default padding and center card */
+    .content-wrapper {
+        padding: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 64px - 56px); /* subtract navbar and footer heights */
+        margin: 0 auto;
+    }
+
+    .profile-card {
+        background: var(--theme-card-bg);
+        border: 1px solid var(--theme-border);
+        border-radius: 32px;
+        max-width: 700px;
+        width: 100%;
+        margin: 1.5rem;
+        overflow: hidden;
+        box-shadow: 0 25px 45px -12px rgba(0,0,0,0.5);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .profile-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 30px 55px -15px rgba(255,43,110,0.2);
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, #0a0a0f 0%, #1e1e2a 100%);
+        padding: 1.8rem;
+        text-align: center;
+        border-bottom: 1px solid rgba(255,43,110,0.3);
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(145deg, var(--primary-pink), var(--primary-pink-dark));
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.8rem;
+        color: white;
+        box-shadow: 0 12px 25px -8px rgba(255,43,110,0.4);
+        margin-bottom: 1rem;
+        border: 3px solid rgba(255,255,255,0.2);
+    }
+
+    .profile-header h2 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(135deg, #fff, #ffb0c3);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .profile-header p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+    }
+
+    .member-since {
+        margin-top: 1rem;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        background: rgba(255,43,110,0.1);
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 40px;
+        backdrop-filter: blur(4px);
+    }
+
+    .card-body {
+        padding: 1.8rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+
+    .input-group {
+        border-radius: 14px;
+        overflow: hidden;
+        background: #0e0e16;
+        border: 1px solid var(--theme-border);
+        transition: all 0.2s;
+    }
+
+    .input-group:focus-within {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 2px rgba(255,43,110,0.3);
+    }
+
+    .input-group-text {
+        background: #13131b;
+        border: none;
+        color: var(--text-muted);
+        padding: 0 1rem;
+        font-size: 1rem;
+    }
+
+    .form-control {
+        background: #0e0e16;
+        border: none;
+        color: white;
+        padding: 0.7rem 0.7rem 0.7rem 0;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus {
+        background: #0e0e16;
+        box-shadow: none;
+        color: white;
+    }
+
+    .btn-update {
+        background: linear-gradient(95deg, var(--primary-pink), var(--primary-pink-dark));
+        border: none;
+        color: white;
+        border-radius: 60px;
+        padding: 0.7rem 1.8rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        width: 100%;
+        font-size: 0.95rem;
+        cursor: pointer;
+        margin-top: 0.5rem;
+    }
+
+    .btn-update:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 20px -10px rgba(255,43,110,0.5);
+        filter: brightness(1.05);
+    }
+
+    .alert-success {
+        background: rgba(255,43,110,0.12);
+        border: 1px solid rgba(255,43,110,0.3);
+        color: #ffb7cc;
+        border-radius: 60px;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        margin-bottom: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .text-danger {
+        color: #ff7b9c !important;
+        font-size: 0.7rem;
+        margin-top: 4px;
+    }
+
+    .row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .col {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    @@media (max-width: 640px) {
+        .profile-card {
+            margin: 1rem;
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 2.2rem;
+        }
+        .profile-header h2 {
+            font-size: 1.3rem;
+        }
+        .card-body {
+            padding: 1.2rem;
+        }
+        .row {
+            flex-direction: column;
+            gap: 0;
+        }
+    }
+</style>
+
+<div class="profile-card">
+    <div class="profile-header">
+        <div class="profile-avatar" style="overflow:hidden; padding:0;">
+            @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+            {
+                <img src="@Model.ProfilePicture" alt="Profile" style="width:100%; height:100%; object-fit:cover;" id="avatarPreview" />
+            }
+            else
+            {
+                <i class="fas fa-user-astronaut" id="avatarIcon"></i>
+                <img src="" alt="Profile" style="width:100%; height:100%; object-fit:cover; display:none;" id="avatarPreview" />
+            }
+        </div>
+        <h2>@Model.FullName</h2>
+        <p>@Model.Email</p>
+        <div class="member-since">
+            <i class="far fa-calendar-alt me-1"></i> Member since @DateTime.Now.ToString("MMMM yyyy")
+        </div>
+    </div>
+    <div class="card-body">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @using (Html.BeginForm("MyProfile", "UserPanel", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+            <div class="form-group mb-3">
+                <span class="form-label">Profile Picture</span>
+                <input type="file" name="ProfileImage" id="ProfileImage" class="form-control" accept="image/*,.jpg,.jpeg,.png,.gif,.webp,.jfif,.bmp" onchange="previewAvatar(this)" />
+                <small class="text-muted">JPG, PNG, GIF, WEBP or BMP. Max 5 MB.</small>
+                @Html.ValidationMessage("ProfileImage", "", new { @class = "text-danger" })
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <span class="form-label">@Html.LabelFor(m => m.FullName)</span>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", placeholder = "Your full name", pattern = @"^[a-zA-Z\s]+$", title = "Name can only contain letters and spaces" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <span class="form-label">@Html.LabelFor(m => m.Email)</span>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "email@example.com" })
+                        </div>
+                        <small class="text-muted d-block mt-1">We'll never share your email.</small>
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-update">
+                <i class="fas fa-save me-2"></i> Update Profile
+            </button>
+        }
+    </div>
+</div>
+<script>
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = document.getElementById('avatarPreview');
+                var icon = document.getElementById('avatarIcon');
+                img.src = e.target.result;
+                img.style.display = 'block';
+                if (icon) icon.style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+@section Scripts {
+    <script>
+        // Auto-dismiss alerts after 3 seconds
+        document.querySelectorAll('.alert-success').forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.3s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            }, 3000);
+        });
+    </script>
+}

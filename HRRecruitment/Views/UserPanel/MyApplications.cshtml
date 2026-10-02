@@ -1,0 +1,339 @@
+﻿@model IEnumerable<HRRecruitment.Models.ApplicantVacancy>
+@{
+    ViewBag.Title = "My Applications";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+
+    var searchString = ViewContext.HttpContext.Request.Query["searchString"].ToString();
+}
+
+<style>
+    /* ========== BLACK & PINK THEME – APPLICATIONS PAGE ========== */
+    :root {
+        --theme-black: #0a0a0f;
+        --theme-black-lighter: #14141c;
+        --theme-dark-pink: #ff2b6e;
+        --theme-pink-glow: rgba(255, 43, 110, 0.3);
+        --theme-card-bg: #111117;
+        --theme-border-subtle: #2a2a33;
+        --text-light: #ffffff;
+        --text-muted: #cbd5e1;
+    }
+
+    .content-wrapper {
+        padding: 1.5rem 2rem;
+    }
+
+    .applications-card {
+        border: none;
+        border-radius: 28px;
+        background: var(--theme-card-bg);
+        overflow: hidden;
+        box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: border 0.2s;
+    }
+    .applications-card:hover {
+        border-color: var(--theme-dark-pink);
+    }
+
+    .card-header {
+        background: rgba(10, 10, 15, 0.8);
+        border-bottom: 1px solid rgba(255, 43, 110, 0.2);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .card-header h4 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff, var(--theme-dark-pink));
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 0.25rem;
+    }
+
+    .card-header p {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .search-container {
+        position: relative;
+        max-width: 320px;
+    }
+
+    .search-container i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--theme-dark-pink);
+        z-index: 2;
+    }
+
+    .search-input {
+        padding-left: 42px !important;
+        border-radius: 40px !important;
+        background: #0e0e16;
+        border: 1px solid var(--theme-border-subtle);
+        color: var(--text-light);
+        transition: 0.2s;
+    }
+
+    .search-input:focus {
+        border-color: var(--theme-dark-pink);
+        box-shadow: 0 0 0 2px var(--theme-pink-glow);
+        background: #0e0e16;
+        color: white;
+    }
+
+    .search-input::placeholder {
+        color: #9ca3af;
+    }
+
+    .table {
+        margin-bottom: 0;
+        color: var(--text-light);
+    }
+
+    .table thead th {
+        background: rgba(20, 20, 28, 0.6);
+        color: #e2e8f0;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+        border: none;
+        padding: 1rem 1rem;
+        font-weight: 600;
+    }
+    .table thead th i {
+        color: var(--theme-dark-pink);
+        margin-right: 6px;
+        font-size: 0.75rem;
+    }
+
+    .table tbody td {
+        padding: 1rem 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        background: transparent;
+        color: var(--text-light);
+    }
+
+    .table tbody tr:hover td {
+        background: rgba(255, 43, 110, 0.05);
+    }
+
+    .table .text-muted {
+        color: #b0b0c0 !important;
+    }
+
+    .id-badge {
+        background: rgba(255, 43, 110, 0.2);
+        color: #ffb7cc;
+        padding: 4px 12px;
+        border-radius: 40px;
+        font-family: monospace;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: 1px solid rgba(255, 43, 110, 0.3);
+        display: inline-block;
+    }
+
+    .badge-scheduled {
+        background: rgba(255, 43, 110, 0.12);
+        color: #ffb7cc;
+        border: 1px solid rgba(255, 43, 110, 0.3);
+    }
+    .badge-selected {
+        background: rgba(46, 125, 50, 0.12);
+        color: #a5d6a7;
+        border: 1px solid rgba(46, 125, 50, 0.3);
+    }
+    .badge-rejected {
+        background: rgba(198, 40, 40, 0.12);
+        color: #ef9a9a;
+        border: 1px solid rgba(198, 40, 40, 0.3);
+    }
+    .badge-applied {
+        background: rgba(255, 43, 110, 0.08);
+        color: #ffb7cc;
+        border: 1px solid rgba(255, 43, 110, 0.2);
+    }
+
+    .badge-status {
+        padding: 6px 14px;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .badge-status i {
+        font-size: 7px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--theme-dark-pink);
+        opacity: 0.6;
+    }
+
+    .empty-state h5 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-light);
+    }
+
+    /* Custom toast pink */
+    .toast {
+        background: linear-gradient(95deg, #ff2b6e, #ff4d7a);
+        border-radius: 40px;
+        padding: 0.5rem 1rem;
+        color: white;
+    }
+    .toast .btn-close-white {
+        filter: brightness(0) invert(1);
+    }
+
+    @@media (max-width: 768px) {
+        .content-wrapper {
+            padding: 1rem;
+        }
+        .card-header .row > div:first-child {
+            margin-bottom: 1rem;
+        }
+        .search-container {
+            max-width: 100%;
+        }
+        .table thead th {
+            font-size: 0.65rem;
+        }
+        .table tbody td {
+            font-size: 0.85rem;
+        }
+    }
+</style>
+
+<div class="applications-card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h4 class="fw-bold mb-0">
+                    <i class="fas fa-file-alt me-2" style="color: var(--theme-dark-pink);"></i> 
+                    My Applications
+                </h4>
+                <p class="mb-0">Track the status of your job applications</p>
+            </div>
+            <div class="col-md-6 mt-3 mt-md-0">
+                <form method="get" class="search-container ms-md-auto">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="searchString" class="form-control search-input" placeholder="Search by vacancy ID, title..." value="@searchString">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-hashtag"></i> App ID</th>
+                    <th><i class="fas fa-briefcase"></i> Vacancy Details</th>
+                    <th><i class="fas fa-calendar-alt"></i> Applied On</th>
+                    <th><i class="fas fa-chart-line"></i> Status</th>
+                    <th><i class="fas fa-calendar-check"></i> Interview</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <h5>No applications yet</h5>
+                            <p>Browse available vacancies and submit your first application.</p>
+                        </td>
+                    </tr>
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><span class="id-badge">@item.ApplicantVacancyId</span></td>
+                        <td>
+                            <div class="fw-bold">@(item.Vacancy?.JobTitle ?? "N/A")</div>
+                            <small class="text-muted">ID: @(item.Vacancy?.VacancyNumber ?? "N/A")</small>
+                        </td>
+                        <td>@item.AttachedDate.ToString("MMM dd, yyyy")</td>
+                        <td>
+                            @{
+                                var statusClass = item.CurrentStatus == "Selected" ? "badge-selected" :
+                                                  item.CurrentStatus == "Rejected" ? "badge-rejected" :
+                                                  item.CurrentStatus == "Interview Scheduled" ? "badge-scheduled" : "badge-applied";
+                                var statusIcon = item.CurrentStatus == "Selected" ? "fas fa-check-circle" :
+                                                item.CurrentStatus == "Rejected" ? "fas fa-times-circle" :
+                                                item.CurrentStatus == "Interview Scheduled" ? "fas fa-clock" : "fas fa-paper-plane";
+                            }
+                            <span class="badge-status @statusClass">
+                                <i class="@statusIcon"></i> @item.CurrentStatus
+                            </span>
+                         <td>
+    @{
+        var scheduledInterview = item.Interviews?.FirstOrDefault(i => i.Status == "Scheduled");
+        if (scheduledInterview != null)
+        {
+            <div class="d-flex align-items-center">
+                <i class="far fa-calendar-alt me-2" style="color: var(--theme-dark-pink);"></i>
+                @scheduledInterview.InterviewDate.ToString("MMM dd, yyyy")
+                <span class="mx-1">|</span>
+                <i class="far fa-clock me-1" style="color: var(--theme-dark-pink);"></i>
+                @scheduledInterview.StartTime.ToString(@"hh\:mm")
+            </div>
+        }
+        else
+        {
+            <span class="text-muted">Not scheduled</span>
+        }
+    }
+</td>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+        <div class="toast align-items-center border-0 show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+            toastElList.forEach(function(toastEl) {
+                new bootstrap.Toast(toastEl).show();
+            });
+        });
+    </script>
+}
